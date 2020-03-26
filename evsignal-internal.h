@@ -34,24 +34,27 @@
 
 typedef void (*ev_sighandler_t)(int);
 
+//信号事件处理器的数据结构定义
 /* Data structure for the default signal-handling implementation in signal.c
  */
 struct evsig_info {
 	/* Event watching ev_signal_pair[1] */
-	struct event ev_signal;
+	struct event ev_signal;//事件处理器结构体
+
+	//evutil_socket_t int 整形
 	/* Socketpair used to send notifications from the signal handler */
 	evutil_socket_t ev_signal_pair[2];
-	/* True iff we've added the ev_signal event yet. */
+	/* True iff we've added the ev_signal event yet. */ //是否添加了信号事件
 	int ev_signal_added;
 	/* Count of the number of signals we're currently watching. */
-	int ev_n_signals_added;
+	int ev_n_signals_added;//监听到的信号事件数量
 
 	/* Array of previous signal handler objects before Libevent started
 	 * messing with them.  Used to restore old signal handlers. */
 #ifdef _EVENT_HAVE_SIGACTION
 	struct sigaction **sh_old;
 #else
-	ev_sighandler_t **sh_old;
+	ev_sighandler_t **sh_old;//事件处理器函数
 #endif
 	/* Size of sh_old. */
 	int sh_old_max;

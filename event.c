@@ -336,7 +336,7 @@ detect_monotonic(void)
 
 	if (use_monotonic_initialized)
 		return;
-
+	//获取系统启动计时 返回秒和纳秒
 	if (clock_gettime(CLOCK_MONOTONIC, &ts) == 0)
 		use_monotonic = 1;
 
@@ -356,20 +356,23 @@ detect_monotonic(void)
 static int
 gettime(struct event_base *base, struct timeval *tp)
 {
+	//th_base_lock
 	EVENT_BASE_ASSERT_LOCKED(base);
-
+	//返回timeval结构体数据
 	if (base->tv_cache.tv_sec) {
 		*tp = base->tv_cache;
 		return (0);
 	}
 
 #if defined(_EVENT_HAVE_CLOCK_GETTIME) && defined(CLOCK_MONOTONIC)
+	//使用系统计时
 	if (use_monotonic) {
 		struct timespec	ts;
-
+		//获取计时失败的话直接返回
 		if (clock_gettime(CLOCK_MONOTONIC, &ts) == -1)
 			return (-1);
 
+		//tp时间结构体保存当前ts变量获取到的系统计时数据
 		tp->tv_sec = ts.tv_sec;
 		tp->tv_usec = ts.tv_nsec / 1000;
 		if (base->last_updated_clock_diff + CLOCK_SYNC_INTERVAL
@@ -559,26 +562,37 @@ event_base_new_with_config(const struct event_config *cfg)
 	event_debug_mode_too_late = 1;
 #endif
 
+	//创建event_base结构体变量
 	if ((base = mm_calloc(1, sizeof(struct event_base))) == NULL) {
 		event_warn("%s: calloc", __func__);
 		return NULL;
 	}
+	//检测是否要 CLOCK_MONOTONIC
 	detect_monotonic();
+	//base->event_tv timeval 结构体  含有秒和微秒
+	//给event_base变量赋时间初始值
 	gettime(base, &base->event_tv);
 
+	//给event_base->timehead事件队列优先级超时初始化
 	min_heap_ctor(&base->timeheap);
+
+	//给event_base事件列表初始化
 	TAILQ_INIT(&base->eventqueue);
+	//给event_base 信号事件处理器的成员初始化
 	base->sig.ev_signal_pair[0] = -1;
 	base->sig.ev_signal_pair[1] = -1;
 	base->th_notify_fd[0] = -1;
 	base->th_notify_fd[1] = -1;
 
+	//给event_base延迟回调成员初始化
 	event_deferred_cb_queue_init(&base->defer_queue);
+	//给event_base 延迟队列的通知设置回调函数
 	base->defer_queue.notify_fn = notify_base_cbq_callback;
 	base->defer_queue.notify_arg = base;
+	//给event_base成员设置flags
 	if (cfg)
 		base->flags = cfg->flags;
-
+	//给event_base io成员初始化
 	evmap_io_initmap(&base->io);
 	evmap_signal_initmap(&base->sigmap);
 	event_changelist_init(&base->changelist);
@@ -591,6 +605,7 @@ event_base_new_with_config(const struct event_config *cfg)
 	for (i = 0; eventops[i] && !base->evbase; i++) {
 		if (cfg != NULL) {
 			/* determine if this backend should be avoided */
+			//检测cfg给的配置是否与目前eventpos数组的某IO复用匹配
 			if (event_config_is_avoided_method(cfg,
 				eventops[i]->name))
 				continue;
@@ -616,7 +631,7 @@ event_base_new_with_config(const struct event_config *cfg)
 		event_base_free(base);
 		return NULL;
 	}
-
+    //获取环境变量
 	if (evutil_getenv("EVENT_SHOW_METHOD"))
 		event_msgx("libevent using: %s", base->evsel->name);
 
@@ -927,6 +942,9 @@ event_config_new(void)
 	if (cfg == NULL)
 		return (NULL);
 
+	//该宏定义位于queue.h文件中
+	//是一个尾队列宏【函数】
+	//给
 	TAILQ_INIT(&cfg->entries);
 
 	return (cfg);
@@ -952,6 +970,12 @@ event_config_free(struct event_config *cfg)
 	mm_free(cfg);
 }
 
+/**
+ * 给event_config.flags赋值
+ * @param cfg
+ * @param flag
+ * @return
+ */
 int
 event_config_set_flag(struct event_config *cfg, int flag)
 {
@@ -964,15 +988,26 @@ event_config_set_flag(struct event_config *cfg, int flag)
 int
 event_config_avoid_method(struct event_config *cfg, const char *method)
 {
+	//申请指定大小的内存返回
 	struct event_config_entry *entry = mm_malloc(sizeof(*entry));
 	if (entry == NULL)
 		return (-1);
 
+	//method参数是空的话就释放掉上面申请好的内容
 	if ((entry->avoid_method = mm_strdup(method)) == NULL) {
 		mm_free(entry);
 		return (-1);
 	}
+	/**
+	 *  struct event_config_entry *entry 上面定义好的 同时给avoid_method传递method参数保存
+	 *  entry->next.tqe_next = NULL;
+		entry->next.tqe_prev = (entries)->tqh_last;
+	    entry->avoid_method = method
 
+	   先给entry结构体赋值method，然后保存在event_config结构体成员entries中
+	   *(entries)->tqh_last = (entry);
+	   (entries)->tqh_last = &(entry)->next.tqe_next;
+	 */
 	TAILQ_INSERT_TAIL(&cfg->entries, entry, next);
 
 	return (0);
@@ -2659,6 +2694,11 @@ static void *(*_mm_malloc_fn)(size_t sz) = NULL;
 static void *(*_mm_realloc_fn)(void *p, size_t sz) = NULL;
 static void (*_mm_free_fn)(void *p) = NULL;
 
+/**
+ * 内存申请函数
+ * @param sz 申请大小
+ * @return 返回申请的内存地址
+ */
 void *
 event_mm_malloc_(size_t sz)
 {
@@ -2681,6 +2721,11 @@ event_mm_calloc_(size_t count, size_t size)
 		return calloc(count, size);
 }
 
+/**
+ * 字符串复制函数
+ * @param str 要复制的字符串
+ * @return 返回复制好的字符串【内存复制】需要free释放
+ */
 char *
 event_mm_strdup_(const char *str)
 {
@@ -2766,6 +2811,7 @@ evthread_notify_drain_default(evutil_socket_t fd, short what, void *arg)
 int
 evthread_make_base_notifiable(struct event_base *base)
 {
+    //读和写回调函数
 	void (*cb)(evutil_socket_t, short, void *) = evthread_notify_drain_default;
 	int (*notify)(struct event_base *) = evthread_notify_base_default;
 
@@ -2780,7 +2826,7 @@ evthread_make_base_notifiable(struct event_base *base)
 #ifndef EFD_CLOEXEC
 #define EFD_CLOEXEC 0
 #endif
-	base->th_notify_fd[0] = eventfd(0, EFD_CLOEXEC);
+	base->th_notify_fd[0] = eventfd(0, EFD_CLOEXEC);//返回一个文件描述符 eventfd
 	if (base->th_notify_fd[0] >= 0) {
 		evutil_make_socket_closeonexec(base->th_notify_fd[0]);
 		notify = evthread_notify_base_eventfd;
@@ -2790,7 +2836,7 @@ evthread_make_base_notifiable(struct event_base *base)
 #if defined(_EVENT_HAVE_PIPE)
 	if (base->th_notify_fd[0] < 0) {
 		if ((base->evsel->features & EV_FEATURE_FDS)) {
-			if (pipe(base->th_notify_fd) < 0) {
+			if (pipe(base->th_notify_fd) < 0) {//创建管道
 				event_warn("%s: pipe", __func__);
 			} else {
 				evutil_make_socket_closeonexec(base->th_notify_fd[0]);
@@ -2811,6 +2857,7 @@ evthread_make_base_notifiable(struct event_base *base)
 			event_sock_warn(-1, "%s: socketpair", __func__);
 			return (-1);
 		} else {
+		    //调用fcntl函数控制其FD_CLOEXEC
 			evutil_make_socket_closeonexec(base->th_notify_fd[0]);
 			evutil_make_socket_closeonexec(base->th_notify_fd[1]);
 		}

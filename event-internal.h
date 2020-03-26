@@ -181,7 +181,8 @@ struct event_base {
 	/** Function pointers used to describe the backend that this event_base
 	 * uses for signals */
 	const struct eventop *evsigsel;
-	/** Data to implement the common signal handelr code. */
+
+	/** Data to implement the common signal handelr code. 信号事件处理器结构体*/
 	struct evsig_info sig;
 
 	/** Number of virtual events */
@@ -235,6 +236,7 @@ struct event_base {
 	/** Mapping from signal numbers to enabled (added) events. */
 	struct event_signal_map sigmap;
 
+	//在event_struct.h文件中有event_list结构体【动态创建的】
 	/** All events that have been enabled (added) in this event_base */
 	struct event_list eventqueue;
 
@@ -293,7 +295,27 @@ struct event_base {
 	int (*th_notify_fn)(struct event_base *base);
 };
 
+/**
+ * 还原结果
+ * struct event_config_entry
+ * {
+ * 		struct {
+ * 				struct event_config_entry *tqe_next;
+ * 				struct event_config_entry **tqe_prev;
+ * 		}next;
+ * 		const char *avoid_method;
+ * }
+ */
 struct event_config_entry {
+	//定义一个结构体
+	/**
+	 * 替换后为
+	 * struct {
+	 *		struct event_config_entry *tqe_next;
+	 *		struct event_config_entry **tqe_prev;
+	 * }
+	 **/
+
 	TAILQ_ENTRY(event_config_entry) next;
 
 	const char *avoid_method;
@@ -301,10 +323,38 @@ struct event_config_entry {
 
 /** Internal structure: describes the configuration we want for an event_base
  * that we're about to allocate. */
+//事件配置结构体
+//主要是控制event_base
+/**
+ *
+ * struct event_config {
+ * 		struct event_configq{
+ * 				struct event_config_entry *tqh_first;
+ * 				struct event_config_entry **tqh_last;
+ * 		}entries;
+ *
+ * 		int n_cpus_hint;
+ * 		enum event_method_feature require_features;
+ * 		enum event_base_config_flag flags;
+ * }
+ */
 struct event_config {
+
+	//创建一个结构体
+	//event_configq结构体的名称
+	//event_config_entry 真实的结构体  同时用该结构体定义2个变量返回
+	/**
+	 * 运行此宏替换为
+	 * struct event_configq{
+	 * 		struct event_config_entry *tqh_first;
+	 * 		struct event_config_entry **tqh_last;
+	 * }
+	 */
 	TAILQ_HEAD(event_configq, event_config_entry) entries;
 
 	int n_cpus_hint;
+	//枚举变量  功能特征
+	//位于event.h头文件中
 	enum event_method_feature require_features;
 	enum event_base_config_flag flags;
 };

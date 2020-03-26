@@ -270,6 +270,8 @@ struct {								\
 } while (0)
 
 /*
+ * 根据name创建一个结构体，同时
+ * 根据type指定结构体并定义2个指针变量
  * Tail queue definitions.
  */
 #define TAILQ_HEAD(name, type)						\
@@ -280,6 +282,11 @@ struct name {								\
 
 #define TAILQ_HEAD_INITIALIZER(head)					\
 	{ NULL, &(head).tqh_first }
+
+/**
+ * 与TAILQ_HEAD一样定义一个结构体
+ * 定义一个匿名结构体
+ */
 
 #define TAILQ_ENTRY(type)						\
 struct {								\
@@ -329,6 +336,9 @@ struct {								\
 	(elm)->field.tqe_prev = &(head)->tqh_first;			\
 } while (0)
 
+/**
+ * 动态的给指定的结构体成员赋值操作
+ */
 #define TAILQ_INSERT_TAIL(head, elm, field) do {			\
 	(elm)->field.tqe_next = NULL;					\
 	(elm)->field.tqe_prev = (head)->tqh_last;			\

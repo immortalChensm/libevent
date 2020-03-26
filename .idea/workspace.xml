@@ -1,0 +1,547 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CMakeRunConfigurationManager" shouldGenerate="true" shouldDeleteObsolete="true">
+    <generated />
+  </component>
+  <component name="CMakeSettings">
+    <configurations>
+      <configuration PROFILE_NAME="Debug" CONFIG_NAME="Debug" />
+    </configurations>
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="8e741331-7861-467f-8ef0-8b3d7850f43f" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/compat/sys/queue.h" beforeDir="false" afterPath="$PROJECT_DIR$/compat/sys/queue.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/event-internal.h" beforeDir="false" afterPath="$PROJECT_DIR$/event-internal.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/event.c" beforeDir="false" afterPath="$PROJECT_DIR$/event.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/evsignal-internal.h" beforeDir="false" afterPath="$PROJECT_DIR$/evsignal-internal.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/evutil.c" beforeDir="false" afterPath="$PROJECT_DIR$/evutil.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/event2/event_struct.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/event2/event_struct.h" afterDir="false" />
+    </list>
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileEditorManager">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/event.c">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="271">
+              <caret line="1612" column="22" selection-start-line="1612" selection-start-column="8" selection-end-line="1612" selection-end-column="22" />
+              <folding>
+                <element signature="e#2562#2600#0" expanded="true" />
+                <element signature="e#2852#2886#0" expanded="true" />
+                <element signature="e#3151#3162#0" expanded="true" />
+                <element signature="e#3205#3212#0" expanded="true" />
+                <element signature="e#3246#3256#0" expanded="true" />
+                <element signature="e#3292#3304#0" expanded="true" />
+                <element signature="e#3337#3346#0" expanded="true" />
+                <element signature="e#3381#3392#0" expanded="true" />
+                <element signature="e#3414#3424#0" expanded="true" />
+                <element signature="e#10816#11023#0" expanded="true" />
+                <element signature="e#11754#12181#0" expanded="true" />
+                <element signature="e#18294#18398#0" expanded="true" />
+                <element signature="e#71281#71553#0" expanded="true" />
+                <element signature="e#71592#71893#0" expanded="true" />
+                <element signature="e#71915#71950#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/evsignal-internal.h">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="637">
+              <caret line="64" column="19" selection-start-line="64" selection-start-column="5" selection-end-line="64" selection-end-column="19" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/WIN32-Code/event2/event-config.h">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-764">
+              <caret line="40" column="27" selection-start-line="40" selection-start-column="10" selection-end-line="40" selection-end-column="27" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/evmap-internal.h">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="281">
+              <caret line="42" column="25" selection-start-line="42" selection-start-column="5" selection-end-line="42" selection-end-column="25" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/evthread-internal.h">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="271">
+              <caret line="112" column="8" selection-start-line="112" selection-start-column="8" selection-end-line="112" selection-end-column="8" />
+              <folding>
+                <element signature="e#1545#1557#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/compat/sys/queue.h">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="271">
+              <caret line="310" column="21" selection-start-line="310" selection-start-column="8" selection-end-line="310" selection-end-column="21" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/event-internal.h">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="271">
+              <caret line="230" column="21" selection-start-line="230" selection-start-column="21" selection-end-line="230" selection-end-column="21" />
+              <folding>
+                <element signature="e#1606#1618#0" expanded="true" />
+                <element signature="e#4467#4704#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/defer-internal.h">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="298">
+              <caret line="53" column="7" selection-start-line="53" selection-start-column="7" selection-end-line="53" selection-end-column="7" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/evmap.c">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="271">
+              <caret line="225" column="20" selection-start-line="225" selection-start-column="20" selection-end-line="225" selection-end-column="20" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/evutil.c">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="271">
+              <caret line="294" column="30" selection-start-line="294" selection-start-column="30" selection-end-line="294" selection-end-column="30" />
+              <folding>
+                <element signature="e#8614#8836#0" expanded="true" />
+                <element signature="e#10885#11194#0" expanded="true" />
+                <element signature="e#56584#56603#0" expanded="true" />
+                <element signature="e#56639#56677#0" expanded="true" />
+                <element signature="e#56713#56751#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>event_base_init</find>
+      <find>event_config_new</find>
+      <find>event_config_avoid_method</find>
+      <find>TAILQ_INSERT_TAIL</find>
+      <find>event_base_get_method</find>
+      <find>event_haveevents</find>
+      <find>event_method_feature</find>
+      <find>evutil_gettimeofday</find>
+      <find>event_with</find>
+      <find>last_updated_clock_diff</find>
+      <find>_evthread_lock_debugging_enabled</find>
+      <find>TAILQ_INIT</find>
+      <find>evutil_socket_t</find>
+      <find>min_heap_ctor</find>
+      <find>TAILQ_HEAD</find>
+      <find>event_deferred_cb_queue_init</find>
+      <find>evthread_notify_base</find>
+      <find>evmap_io_initmap</find>
+      <find>epollops</find>
+      <find>evutil_getenv</find>
+      <find>evmap_signal_initmap</find>
+      <find>_EVENT_HAVE_EPOLL</find>
+      <find>evutil_make_socket_closeonexec</find>
+      <find>TAILQ_FOREACH</find>
+      <find>event_init</find>
+      <find>event_base_new_with_config</find>
+      <find>evutil_make_socket_nonblocking</find>
+      <find>event_list</find>
+      <find>event_base_loop</find>
+      <find>evsig_set_base</find>
+    </findStrings>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/compat/sys/queue.h" />
+        <option value="$PROJECT_DIR$/event-internal.h" />
+        <option value="$PROJECT_DIR$/include/event2/event_struct.h" />
+        <option value="$PROJECT_DIR$/evsignal-internal.h" />
+        <option value="$PROJECT_DIR$/evutil.c" />
+        <option value="$PROJECT_DIR$/event.c" />
+      </list>
+    </option>
+  </component>
+  <component name="OCFindUsagesOptions" text="true" ivars="false" properties="true" derivedClasses="false" />
+  <component name="ProjectFrameBounds" extendedState="6">
+    <option name="x" value="-8" />
+    <option name="y" value="-8" />
+    <option name="width" value="1400" />
+    <option name="height" value="1000" />
+  </component>
+  <component name="ProjectView">
+    <navigator proportions="" version="1">
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="libevent" type="b2602c69:ProjectViewProjectNode" />
+              <item name="libevent" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="libevent" type="b2602c69:ProjectViewProjectNode" />
+              <item name="libevent" type="462c0819:PsiDirectoryNode" />
+              <item name="compat" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="libevent" type="b2602c69:ProjectViewProjectNode" />
+              <item name="libevent" type="462c0819:PsiDirectoryNode" />
+              <item name="compat" type="462c0819:PsiDirectoryNode" />
+              <item name="sys" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="libevent" type="b2602c69:ProjectViewProjectNode" />
+              <item name="libevent" type="462c0819:PsiDirectoryNode" />
+              <item name="include" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="libevent" type="b2602c69:ProjectViewProjectNode" />
+              <item name="libevent" type="462c0819:PsiDirectoryNode" />
+              <item name="include" type="462c0819:PsiDirectoryNode" />
+              <item name="event2" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="libevent" type="b2602c69:ProjectViewProjectNode" />
+              <item name="libevent" type="462c0819:PsiDirectoryNode" />
+              <item name="WIN32-Code" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="libevent" type="b2602c69:ProjectViewProjectNode" />
+              <item name="libevent" type="462c0819:PsiDirectoryNode" />
+              <item name="WIN32-Code" type="462c0819:PsiDirectoryNode" />
+              <item name="event2" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+      <pane id="Scope" />
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../chat" />
+    <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
+    <property name="nodejs_npm_path_reset_for_default_project" value="true" />
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="8e741331-7861-467f-8ef0-8b3d7850f43f" name="Default Changelist" comment="" />
+      <created>1573193643646</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1573193643646</updated>
+      <workItem from="1573193645028" duration="281000" />
+      <workItem from="1585035245199" duration="3236000" />
+      <workItem from="1585098590587" duration="10343000" />
+      <workItem from="1585187216214" duration="10595000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TimeTrackingManager">
+    <option name="totallyTimeSpent" value="24455000" />
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
+    <editor active="true" />
+    <layout>
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.14658849" />
+      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
+      <window_info id="Favorites" order="2" side_tool="true" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Find" order="1" />
+      <window_info anchor="bottom" id="Run" order="2" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="6" />
+      <window_info anchor="bottom" id="Database Changes" order="7" />
+      <window_info anchor="bottom" id="Version Control" order="8" />
+      <window_info anchor="bottom" id="Terminal" order="9" />
+      <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info anchor="right" id="Database" order="3" />
+    </layout>
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/kqueue.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-2277" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/WIN32-Code/tree.h">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/signal.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-9115" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/sample/hello-world.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="529">
+          <caret line="84" column="13" lean-forward="true" selection-start-line="84" selection-start-column="13" selection-end-line="84" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/include/event2/event.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="9867">
+          <caret line="429" column="25" selection-start-line="429" selection-start-column="5" selection-end-line="429" selection-end-column="25" />
+          <folding>
+            <element signature="e#7646#7658#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/include/event2/event_compat.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="253">
+          <caret line="11" column="17" selection-start-line="11" selection-start-column="17" selection-end-line="11" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/epoll.c">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/include/event2/thread.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="360">
+          <caret line="17" column="25" selection-start-line="17" selection-start-column="25" selection-end-line="17" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/mm-internal.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="131">
+          <caret line="32" column="6" lean-forward="true" selection-start-line="32" selection-start-column="6" selection-end-line="32" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/minheap-internal.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="271">
+          <caret line="37" column="15" selection-start-line="37" selection-start-column="15" selection-end-line="37" selection-end-column="15" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/include/event2/util.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="225">
+          <caret line="271" column="32" lean-forward="true" selection-start-line="271" selection-start-column="32" selection-end-line="271" selection-end-column="32" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/include/event2/event_struct.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="276">
+          <caret line="108" column="46" selection-start-line="108" selection-start-column="46" selection-end-line="108" selection-end-column="46" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ChangeLog">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="321">
+          <caret line="659" column="32" selection-start-line="659" selection-start-column="21" selection-end-line="659" selection-end-column="32" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/config.h.in">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="183">
+          <caret line="417" column="8" lean-forward="true" selection-start-line="417" selection-start-column="8" selection-end-line="417" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/config.sub">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="268">
+          <caret line="13" column="26" selection-start-line="13" selection-start-column="26" selection-end-line="13" selection-end-column="26" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/configure">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="429">
+          <caret line="20" column="31" selection-start-line="20" selection-start-column="31" selection-end-line="20" selection-end-column="31" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Makefile.am">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-4854" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Makefile.in">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-4071" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/util-internal.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="298">
+          <caret line="180" column="25" selection-start-line="180" selection-start-column="12" selection-end-line="180" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/defer-internal.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="298">
+          <caret line="53" column="7" selection-start-line="53" selection-start-column="7" selection-end-line="53" selection-end-column="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/evmap-internal.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="281">
+          <caret line="42" column="25" selection-start-line="42" selection-start-column="5" selection-end-line="42" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/WIN32-Code/event2/event-config.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-764">
+          <caret line="40" column="27" selection-start-line="40" selection-start-column="10" selection-end-line="40" selection-end-column="27" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/compat/sys/queue.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="271">
+          <caret line="310" column="21" selection-start-line="310" selection-start-column="8" selection-end-line="310" selection-end-column="21" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/event-internal.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="271">
+          <caret line="230" column="21" selection-start-line="230" selection-start-column="21" selection-end-line="230" selection-end-column="21" />
+          <folding>
+            <element signature="e#1606#1618#0" expanded="true" />
+            <element signature="e#4467#4704#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/evthread-internal.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="271">
+          <caret line="112" column="8" selection-start-line="112" selection-start-column="8" selection-end-line="112" selection-end-column="8" />
+          <folding>
+            <element signature="e#1545#1557#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/evsignal-internal.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="637">
+          <caret line="64" column="19" selection-start-line="64" selection-start-column="5" selection-end-line="64" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/event.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="271">
+          <caret line="1612" column="22" selection-start-line="1612" selection-start-column="8" selection-end-line="1612" selection-end-column="22" />
+          <folding>
+            <element signature="e#2562#2600#0" expanded="true" />
+            <element signature="e#2852#2886#0" expanded="true" />
+            <element signature="e#3151#3162#0" expanded="true" />
+            <element signature="e#3205#3212#0" expanded="true" />
+            <element signature="e#3246#3256#0" expanded="true" />
+            <element signature="e#3292#3304#0" expanded="true" />
+            <element signature="e#3337#3346#0" expanded="true" />
+            <element signature="e#3381#3392#0" expanded="true" />
+            <element signature="e#3414#3424#0" expanded="true" />
+            <element signature="e#10816#11023#0" expanded="true" />
+            <element signature="e#11754#12181#0" expanded="true" />
+            <element signature="e#18294#18398#0" expanded="true" />
+            <element signature="e#71281#71553#0" expanded="true" />
+            <element signature="e#71592#71893#0" expanded="true" />
+            <element signature="e#71915#71950#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/evmap.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="271">
+          <caret line="225" column="20" selection-start-line="225" selection-start-column="20" selection-end-line="225" selection-end-column="20" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/evutil.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="271">
+          <caret line="294" column="30" selection-start-line="294" selection-start-column="30" selection-end-line="294" selection-end-column="30" />
+          <folding>
+            <element signature="e#8614#8836#0" expanded="true" />
+            <element signature="e#10885#11194#0" expanded="true" />
+            <element signature="e#56584#56603#0" expanded="true" />
+            <element signature="e#56639#56677#0" expanded="true" />
+            <element signature="e#56713#56751#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+  </component>
+</project>

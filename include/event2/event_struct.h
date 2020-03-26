@@ -84,8 +84,9 @@ struct name {					\
 #endif
 
 struct event_base;
-struct event {
-	TAILQ_ENTRY(event) ev_active_next;
+struct event {  //事件处理器结构体
+
+	TAILQ_ENTRY(event) ev_active_next;//定义一个匿名结构体变量
 	TAILQ_ENTRY(event) ev_next;
 	/* for managing timeouts */
 	union {
@@ -112,7 +113,7 @@ struct event {
 		} ev_signal;
 	} _ev;
 
-	short ev_events;
+	short ev_events;//事件
 	short ev_res;		/* result passed to event callback */
 	short ev_flags;
 	ev_uint8_t ev_pri;	/* smaller numbers are higher priority */
@@ -120,10 +121,10 @@ struct event {
 	struct timeval ev_timeout;
 
 	/* allows us to adopt for different types of events */
-	void (*ev_callback)(evutil_socket_t, short, void *arg);
-	void *ev_arg;
+	void (*ev_callback)(evutil_socket_t, short, void *arg);//事件回调函数
+	void *ev_arg;//事件回调函数的参数
 };
-
+//创建一个struct event_list 结构体
 TAILQ_HEAD (event_list, event);
 
 #ifdef _EVENT_DEFINED_TQENTRY
