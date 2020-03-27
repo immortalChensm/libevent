@@ -178,7 +178,7 @@ evutil_read_file(const char *filename, char **content_out, size_t *len_out,
 	*content_out = mem;
 	return 0;
 }
-
+//创建全双工的流管道
 int
 evutil_socketpair(int family, int type, int protocol, evutil_socket_t fd[2])
 {

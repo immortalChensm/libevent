@@ -173,6 +173,7 @@ evsig_init(struct event_base *base)
 	 * pair to wake up our event loop.  The event loop then scans for
 	 * signals that got delivered.
 	 */
+	//创建全双工的流管道并把创建的管道保存在event_base成员中
 	if (evutil_socketpair(
 		    AF_UNIX, SOCK_STREAM, 0, base->sig.ev_signal_pair) == -1) {
 #ifdef WIN32
@@ -185,14 +186,20 @@ evsig_init(struct event_base *base)
 		return -1;
 	}
 
+	//同样设置执行时关闭
 	evutil_make_socket_closeonexec(base->sig.ev_signal_pair[0]);
 	evutil_make_socket_closeonexec(base->sig.ev_signal_pair[1]);
 	base->sig.sh_old = NULL;
 	base->sig.sh_old_max = 0;
 
+	//设置为非阻塞IO
 	evutil_make_socket_nonblocking(base->sig.ev_signal_pair[0]);
 	evutil_make_socket_nonblocking(base->sig.ev_signal_pair[1]);
-
+	//sig.ev_signal 信号事件处理器
+	//socketpai[1]写管道文件
+	//读事件|持续永久
+	//evsig_cb 信号事件回调函数
+	//把事件，双向流管道文件，回调函数，回调函数的参数等封装并保存在event_base.sig.ev_signal中
 	event_assign(&base->sig.ev_signal, base, base->sig.ev_signal_pair[1],
 		EV_READ | EV_PERSIST, evsig_cb, base);
 

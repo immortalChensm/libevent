@@ -620,7 +620,7 @@ event_base_new_with_config(const struct event_config *cfg)
 			continue;
 
 		base->evsel = eventops[i];
-
+        //假设系统选择的IO复用是epoll则看epoll.c的封装
 		base->evbase = base->evsel->init(base);
 	}
 
@@ -1620,6 +1620,7 @@ event_base_loop(struct event_base *base, int flags)
 
 	base->event_gotterm = base->event_break = 0;
 
+	//无限RUNNING
 	while (!done) {
 		base->event_continue = 0;
 
@@ -1657,6 +1658,7 @@ event_base_loop(struct event_base *base, int flags)
 
 		clear_time_cache(base);
 
+		//reactor事件调度
 		res = evsel->dispatch(base, tv_p);
 
 		if (res == -1) {

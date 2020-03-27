@@ -103,13 +103,14 @@ const struct eventop epollops = {
  * round that down by 47 seconds.
  */
 #define MAX_EPOLL_TIMEOUT_MSEC (35*60*1000)
-
+//在创建event_base 如event_init时运行此函数【看系统选择的IO多路复用是啥】
 static void *
 epoll_init(struct event_base *base)
 {
 	int epfd;
 	struct epollop *epollop;
 
+	//创建一个epollfd对象返回文件描述符
 	/* Initialize the kernel queue.  (The size field is ignored since
 	 * 2.6.8.) */
 	if ((epfd = epoll_create(32000)) == -1) {
@@ -117,16 +118,19 @@ epoll_init(struct event_base *base)
 			event_warn("epoll_create");
 		return (NULL);
 	}
-
+	//执行就关闭这个文件
 	evutil_make_socket_closeonexec(epfd);
 
+	//定义一个epollop结构体变量 然后返回保存在event_base->ev_base=epollop
 	if (!(epollop = mm_calloc(1, sizeof(struct epollop)))) {
 		close(epfd);
 		return (NULL);
 	}
 
+	//存放epollfd
 	epollop->epfd = epfd;
 
+	//存放epoll_event的值
 	/* Initialize fields */
 	epollop->events = mm_calloc(INITIAL_NEVENT, sizeof(struct epoll_event));
 	if (epollop->events == NULL) {
@@ -139,8 +143,10 @@ epoll_init(struct event_base *base)
 	if ((base->flags & EVENT_BASE_FLAG_EPOLL_USE_CHANGELIST) != 0 ||
 	    ((base->flags & EVENT_BASE_FLAG_IGNORE_ENV) == 0 &&
 		evutil_getenv("EVENT_EPOLL_USE_CHANGELIST") != NULL))
+		//event_base->evsel保存epoll相关操作的回调函数数组
 		base->evsel = &epollops_changelist;
 
+	//信号事件处理器封装初始操作
 	evsig_init(base);
 
 	return (epollop);
