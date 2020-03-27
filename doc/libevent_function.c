@@ -220,6 +220,16 @@ int evutil_make_socket_nonblocking(evutil_socket_t fd)
 void min_heap_elem_init(struct event* e) {
     e->ev_timeout_pos.min_heap_idx = -1;
 }
+/**
+ *  创建一个事件处理器
+ * @param ev 事件处理器结构体
+ * @param base event_base
+ * @param fd  文件描述符|信号数值|-1表示定时事件
+ * @param events 读写事件|信号事件|0定时事件
+ * @param callback 事件的回调函数
+ * @param arg 回调函数的参数
+ * @return
+ */
 int event_assign(struct event *ev, struct event_base *base, evutil_socket_t fd, short events, void (*callback)(evutil_socket_t, short, void *), void *arg)
 {
     if (!base)
@@ -264,6 +274,386 @@ int event_assign(struct event *ev, struct event_base *base, evutil_socket_t fd, 
     _event_debug_note_setup(ev);
 
     return 0;
+}
+int evmap_io_add(struct event_base *base, evutil_socket_t fd, struct event *ev)
+{
+    const struct eventop *evsel = base->evsel;
+    //io事件处理器数组
+    struct event_io_map *io = &base->io;
+
+    struct evmap_io *ctx = NULL;
+    int nread, nwrite, retval = 0;
+    short res = 0, old = 0;
+    struct event *old_ev;
+
+    EVUTIL_ASSERT(fd == ev->ev_fd);
+
+    if (fd < 0)
+        return 0;
+
+#ifndef EVMAP_USE_HT
+    if (fd >= io->nentries) {
+        if (evmap_make_space(io, fd, sizeof(struct evmap_io *)) == -1)
+            return (-1);
+    }
+#endif
+    GET_IO_SLOT_AND_CTOR(ctx, io, fd, evmap_io, evmap_io_init,
+                         evsel->fdinfo_len);
+
+    nread = ctx->nread;
+    nwrite = ctx->nwrite;
+
+    if (nread)
+        old |= EV_READ;
+    if (nwrite)
+        old |= EV_WRITE;
+
+    if (ev->ev_events & EV_READ) {
+        if (++nread == 1)
+            res |= EV_READ;
+    }
+    if (ev->ev_events & EV_WRITE) {
+        if (++nwrite == 1)
+            res |= EV_WRITE;
+    }
+    if (EVUTIL_UNLIKELY(nread > 0xffff || nwrite > 0xffff)) {
+        event_warnx("Too many events reading or writing on fd %d",
+                    (int)fd);
+        return -1;
+    }
+    if (EVENT_DEBUG_MODE_IS_ON() &&
+        (old_ev = TAILQ_FIRST(&ctx->events)) &&
+        (old_ev->ev_events&EV_ET) != (ev->ev_events&EV_ET)) {
+        event_warnx("Tried to mix edge-triggered and non-edge-triggered"
+                    " events on fd %d", (int)fd);
+        return -1;
+    }
+
+    if (res) {
+        void *extra = ((char*)ctx) + sizeof(struct evmap_io);
+        /* XXX(niels): we cannot mix edge-triggered and
+         * level-triggered, we should probably assert on
+         * this. */
+        if (evsel->add(base, ev->ev_fd,
+                       old, (ev->ev_events & EV_ET) | res, extra) == -1)
+            return (-1);
+        retval = 1;
+    }
+
+    ctx->nread = (ev_uint16_t) nread;
+    ctx->nwrite = (ev_uint16_t) nwrite;
+    TAILQ_INSERT_TAIL(&ctx->events, ev, ev_io_next);
+
+    return (retval);
+}
+
+int evmap_make_space(struct event_signal_map *map, int slot, int msize)
+{
+    if (map->nentries <= slot) {
+        int nentries = map->nentries ? map->nentries : 32;
+        void **tmp;
+
+        while (nentries <= slot)
+            nentries <<= 1;
+
+        tmp = (void **)mm_realloc(map->entries, nentries * msize);
+        if (tmp == NULL)
+            return (-1);
+
+        memset(&tmp[map->nentries], 0,
+               (nentries - map->nentries) * msize);
+
+        map->nentries = nentries;
+        map->entries = tmp;
+    }
+
+    return (0);
+}
+
+int evmap_make_space(struct event_signal_map *map, int slot, int msize)
+{
+    //netries=0<信号数值
+    if (map->nentries <= slot) {
+        int nentries = map->nentries ? map->nentries : 32;
+        void **tmp;
+        //linux 信号只有32个有效，剩下的32个是扩展的信号并不用
+        //0<32
+        //假设信号为SIGINT 2
+        while (nentries <= slot)
+            nentries <<= 1;//数据左移操作  如1左移 0000 0001  0000 0010 为2
+
+            //entries是1个数组  nentries=32*申请好的内容空间 【动态扩展数组内存大小】
+        tmp = (void **)mm_realloc(map->entries, nentries * msize);
+        if (tmp == NULL)
+            return (-1);
+
+        //初始化数组
+        memset(&tmp[map->nentries], 0,
+               (nentries - map->nentries) * msize);
+
+        //2
+        map->nentries = nentries;
+        map->entries = tmp;
+    }
+
+    return (0);
+}
+
+
+void evmap_signal_init(struct evmap_signal *entry)
+{
+    TAILQ_INIT(&entry->events);
+}
+
+/**
+ * sig 信号数值
+ * ev 信号事件处理器【一般经过event_new处理】
+ */
+int evmap_signal_add(struct event_base *base, int sig, struct event *ev)
+{
+    /**
+     *信号事件处理器添加的动作得到的数据结构大概是这样
+     * struct event_base{
+     *          struct event_signal_map sigmap{
+     *                  void **entries[sigNum] = struct evmap_signal {
+                                                    struct event_list events=struct event_list {
+                                                        struct event *tqh_first;
+                                                        struct event **tqh_last=struct event *ev[信号事件处理器封装好的数据];
+                                                    }
+                                                };
+	                    int nentries=sigNum;
+     *          }
+     * }
+     */
+    const struct eventop *evsel = base->evsigsel;
+    //信号事件映射数组
+    struct event_signal_map *map = &base->sigmap;//对map的操作就是操作base->sigmap
+    //信号事件队列映射
+    struct evmap_signal *ctx = NULL;
+
+    //nentries = 0 初始化时为0
+    //信号值一般都大于0的
+    if (sig >= map->nentries) {
+        if (evmap_make_space(//给map申请指定大小的内存【数组】
+                map, sig, sizeof(struct evmap_signal *)) == -1)
+            return (-1);
+    }
+    //ctx 信号事件队列
+    //map 信号事件数组
+    //sig 信号数值
+    //最终初始化为：ctx=map->entries[信号值] = (struct evmap_signal*)内存地址
+    GET_SIGNAL_SLOT_AND_CTOR(ctx, map, sig, evmap_signal, evmap_signal_init,
+                             base->evsigsel->fdinfo_len);
+
+    //第一次为空
+    if (TAILQ_EMPTY(&ctx->events)) {
+        //此处需要看初始化时做的事情【有道笔记图】
+        if (evsel->add(base, ev->ev_fd, 0, EV_SIGNAL, NULL)
+            == -1)
+            return (-1);
+    }
+    //将信号事件处理器插入到链表中
+    TAILQ_INSERT_TAIL(&ctx->events, ev, ev_signal_next);
+
+    return (1);
+}
+
+void min_heap_shift_up_(min_heap_t* s, unsigned hole_index, struct event* e)
+{
+    unsigned parent = (hole_index - 1) / 2;
+    while (hole_index && min_heap_elem_greater(s->p[parent], e))
+    {
+        (s->p[hole_index] = s->p[parent])->ev_timeout_pos.min_heap_idx = hole_index;
+        hole_index = parent;
+        parent = (hole_index - 1) / 2;
+    }
+    (s->p[hole_index] = e)->ev_timeout_pos.min_heap_idx = hole_index;
+}
+
+int min_heap_push(min_heap_t* s, struct event* e)
+{
+    if (min_heap_reserve(s, s->n + 1))
+        return -1;
+    min_heap_shift_up_(s, s->n++, e);
+    return 0;
+}
+static void event_queue_insert(struct event_base *base, struct event *ev, int queue)
+{
+    EVENT_BASE_ASSERT_LOCKED(base);
+
+    if (ev->ev_flags & queue) {
+        /* Double insertion is possible for active events */
+        if (queue & EVLIST_ACTIVE)
+            return;
+
+        event_errx(1, "%s: %p(fd "EV_SOCK_FMT") already on queue %x", __func__,
+                   ev, EV_SOCK_ARG(ev->ev_fd), queue);
+        return;
+    }
+
+    if (~ev->ev_flags & EVLIST_INTERNAL)
+        base->event_count++;
+
+    ev->ev_flags |= queue;
+    switch (queue) {
+        case EVLIST_INSERTED:
+            TAILQ_INSERT_TAIL(&base->eventqueue, ev, ev_next);
+            break;
+        case EVLIST_ACTIVE:
+            base->event_count_active++;
+            TAILQ_INSERT_TAIL(&base->activequeues[ev->ev_pri],
+                              ev,ev_active_next);
+            break;
+        case EVLIST_TIMEOUT: {
+            if (is_common_timeout(&ev->ev_timeout, base)) {
+                struct common_timeout_list *ctl =
+                        get_common_timeout_list(base, &ev->ev_timeout);
+                insert_common_timeout_inorder(ctl, ev);
+            } else
+                min_heap_push(&base->timeheap, ev);
+            break;
+        }
+        default:
+            event_errx(1, "%s: unknown queue %x", __func__, queue);
+    }
+}
+
+int event_add_internal(struct event *ev, const struct timeval *tv,int tv_is_absolute)
+{
+    struct event_base *base = ev->ev_base;
+    int res = 0;
+    int notify = 0;
+
+    EVENT_BASE_ASSERT_LOCKED(base);
+    _event_debug_assert_is_setup(ev);
+
+    event_debug((
+                        "event_add: event: %p (fd "EV_SOCK_FMT"), %s%s%scall %p",
+                                ev,
+                                EV_SOCK_ARG(ev->ev_fd),
+                                ev->ev_events & EV_READ ? "EV_READ " : " ",
+                                ev->ev_events & EV_WRITE ? "EV_WRITE " : " ",
+                                tv ? "EV_TIMEOUT " : " ",
+                                ev->ev_callback));
+
+    EVUTIL_ASSERT(!(ev->ev_flags & ~EVLIST_ALL));
+
+
+    if (tv != NULL && !(ev->ev_flags & EVLIST_TIMEOUT)) {
+        if (min_heap_reserve(&base->timeheap,
+                             1 + min_heap_size(&base->timeheap)) == -1)
+            return (-1);  /* ENOMEM == errno */
+    }
+
+    //与多线程同步相关的配置【暂且不管】
+#ifndef _EVENT_DISABLE_THREAD_SUPPORT
+    if (base->current_event == ev && (ev->ev_events & EV_SIGNAL)
+        && !EVBASE_IN_THREAD(base)) {
+        ++base->current_event_waiters;
+        EVTHREAD_COND_WAIT(base->current_event_cond, base->th_base_lock);
+    }
+#endif
+
+    if ((ev->ev_events & (EV_READ|EV_WRITE|EV_SIGNAL)) &&
+        !(ev->ev_flags & (EVLIST_INSERTED|EVLIST_ACTIVE))) {
+        if (ev->ev_events & (EV_READ|EV_WRITE))//IO事件
+            res = evmap_io_add(base, ev->ev_fd, ev);
+        else if (ev->ev_events & EV_SIGNAL)//信号事件
+            res = evmap_signal_add(base, (int)ev->ev_fd, ev);//event_base 信号数值  信号事件处理器
+        if (res != -1)
+            event_queue_insert(base, ev, EVLIST_INSERTED);
+        if (res == 1) {
+            /* evmap says we need to notify the main thread. */
+            notify = 1;
+            res = 0;
+        }
+    }
+
+    //定时事件在这里添加
+    if (res != -1 && tv != NULL) {
+        struct timeval now;
+        int common_timeout;
+
+        if (ev->ev_closure == EV_CLOSURE_PERSIST && !tv_is_absolute)
+            ev->ev_io_timeout = *tv;
+        if (ev->ev_flags & EVLIST_TIMEOUT) {
+            /* XXX I believe this is needless. */
+            if (min_heap_elt_is_top(ev))
+                notify = 1;
+            event_queue_remove(base, ev, EVLIST_TIMEOUT);
+        }
+
+        if ((ev->ev_flags & EVLIST_ACTIVE) &&
+            (ev->ev_res & EV_TIMEOUT)) {
+            if (ev->ev_events & EV_SIGNAL) {
+
+                if (ev->ev_ncalls && ev->ev_pncalls) {
+                    /* Abort loop */
+                    *ev->ev_pncalls = 0;
+                }
+            }
+
+            event_queue_remove(base, ev, EVLIST_ACTIVE);
+        }
+
+        gettime(base, &now);
+
+        common_timeout = is_common_timeout(tv, base);
+        if (tv_is_absolute) {
+            ev->ev_timeout = *tv;
+        } else if (common_timeout) {
+            struct timeval tmp = *tv;
+            tmp.tv_usec &= MICROSECONDS_MASK;
+            evutil_timeradd(&now, &tmp, &ev->ev_timeout);
+            ev->ev_timeout.tv_usec |=
+                    (tv->tv_usec & ~MICROSECONDS_MASK);
+        } else {
+            evutil_timeradd(&now, tv, &ev->ev_timeout);
+        }
+
+        event_debug((
+                            "event_add: timeout in %d seconds, call %p",
+                                    (int)tv->tv_sec, ev->ev_callback));
+
+        event_queue_insert(base, ev, EVLIST_TIMEOUT);
+        if (common_timeout) {
+            struct common_timeout_list *ctl =
+                    get_common_timeout_list(base, &ev->ev_timeout);
+            if (ev == TAILQ_FIRST(&ctl->events)) {
+                common_timeout_schedule(ctl, &now, ev);
+            }
+        } else {
+
+            if (min_heap_elt_is_top(ev))
+                notify = 1;
+        }
+    }
+
+
+    if (res != -1 && notify && EVBASE_NEED_NOTIFY(base))
+        evthread_notify_base(base);
+
+    _event_debug_note_add(ev);
+
+    return (res);
+}
+
+int event_add(struct event *ev, const struct timeval *tv)
+{
+    int res;
+
+    if (EVUTIL_FAILURE_CHECK(!ev->ev_base)) {
+        event_warnx("%s: event has no event_base set.", __func__);
+        return -1;
+    }
+
+    EVBASE_ACQUIRE_LOCK(ev->ev_base, th_base_lock);
+
+    res = event_add_internal(ev, tv, 0);
+
+    EVBASE_RELEASE_LOCK(ev->ev_base, th_base_lock);
+
+    return (res);
 }
 
 static int evsig_add(struct event_base *base, evutil_socket_t evsignal, short old, short events, void *p)
@@ -649,6 +1039,30 @@ static int timeout_next(struct event_base *base, struct timeval **tv_p)
     out:
     return (res);
 }
+/**
+ * 创建一个事件处理器
+ * event_base
+ * 文件描述符|信号数值
+ * events 事件
+ * cb 回调函数
+ * arg 参数
+ */
+struct event * event_new(struct event_base *base, evutil_socket_t fd, short events, void (*cb)(evutil_socket_t, short, void *), void *arg)
+{
+    //定义事件处理器变量
+    struct event *ev;
+    ev = mm_malloc(sizeof(struct event));
+    if (ev == NULL)
+        return (NULL);
+    //把信号数值/文件描述符，监听事件，回调函数，回调函数的参数保存
+    if (event_assign(ev, base, fd, events, cb, arg) < 0) {
+        mm_free(ev);
+        return (NULL);
+    }
+
+    return (ev);
+}
+
 int event_base_loop(struct event_base *base, int flags)
 {
     const struct eventop *evsel = base->evsel;

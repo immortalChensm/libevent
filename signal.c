@@ -278,9 +278,9 @@ _evsig_set_handler(struct event_base *base,
 
 	return (0);
 }
-
-static int
-evsig_add(struct event_base *base, evutil_socket_t evsignal, short old, short events, void *p)
+//创建信号事件处理器时调用
+//evsel->add(base, ev->ev_fd, 0, EV_SIGNAL, NULL)
+static int evsig_add(struct event_base *base, evutil_socket_t evsignal, short old, short events, void *p)
 {
 	struct evsig_info *sig = &base->sig;
 	(void)p;

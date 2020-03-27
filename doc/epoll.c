@@ -76,8 +76,8 @@ static int epoll_dispatch(struct event_base *base, struct timeval *tv)
 
     //开始循环处理就绪的文件描述符
     for (i = 0; i < res; i++) {
-        int what = events[i].events;
-        short ev = 0;
+        int what = events[i].events;//取出事件
+        short ev = 0;//保存事件的初始变量
 
         if (what & (EPOLLHUP|EPOLLERR)) {
             ev = EV_READ | EV_WRITE;

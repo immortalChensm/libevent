@@ -68,11 +68,6 @@ struct event_configq {								\
 }
 
 
-struct event_signal_map {
-    void **entries;
-    int nentries;
-};
-
 int evsig_init(struct event_base *base);
 struct name {								\
 	struct type *tqh_first;	/* first element */			\
@@ -136,6 +131,54 @@ static const struct eventop evsigops = {
 	 ((tvp)->tv_usec cmp (uvp)->tv_usec) :				\
 	 ((tvp)->tv_sec cmp (uvp)->tv_sec))
 
+	 //信号事件
+#define evsignal_add(ev, tv)		event_add((ev), (tv))
+
+#define evsignal_assign(ev, b, x, cb, arg)	event_assign((ev), (b), (x), EV_SIGNAL|EV_PERSIST, cb, (arg))
+//信号事件处理器创建接口
+#define evsignal_new(b, x, cb, arg) event_new((b), (x), EV_SIGNAL|EV_PERSIST, (cb), (arg))
+
+#define evsignal_del(ev)		event_del(ev)
+
+#define evsignal_pending(ev, tv)	event_pending((ev), EV_SIGNAL, (tv))
+
+#define evsignal_initialized(ev)	event_initialized(ev)
+
+//定时事件
+#define evtimer_assign(ev, b, cb, arg) event_assign((ev), (b), -1, 0, (cb), (arg))
+//定时事件处理器接口
+#define evtimer_new(b, cb, arg)	       event_new((b), -1, 0, (cb), (arg))
+
+#define evtimer_add(ev, tv)		event_add((ev), (tv))
+
+#define evtimer_del(ev)			event_del(ev)
+
+#define evtimer_pending(ev, tv)		event_pending((ev), EV_TIMEOUT, (tv))
+
+#define evtimer_initialized(ev)		event_initialized(ev)
+
+#define GET_SIGNAL_SLOT_AND_CTOR(x, map, slot, type, ctor, fdinfo_len)	\
+	do {
+	//map 信号事件数组
+		if ((map)->entries[slot] == NULL) {			\
+		//
+			(map)->entries[slot] =				\
+			    mm_calloc(1,sizeof(struct type)+fdinfo_len); \
+			if (EVUTIL_UNLIKELY((map)->entries[slot] == NULL)) \
+				return (-1);				\
+			(ctor)((struct type *)(map)->entries[slot]);	\
+		}							\
+		(x) = (struct type *)((map)->entries[slot]);
+	} while (0)
+
+#define GET_IO_SLOT_AND_CTOR(x,map,slot,type,ctor,fdinfo_len) GET_SIGNAL_SLOT_AND_CTOR(x,map,slot,type,ctor,fdinfo_len)
+
+#define TAILQ_INSERT_TAIL(head, elm, field) do {			\
+	(elm)->field.tqe_next = NULL;					\
+	(elm)->field.tqe_prev = (head)->tqh_last;			\
+	*(head)->tqh_last = (elm);					\
+	(head)->tqh_last = &(elm)->field.tqe_next;			\
+} while (0)
 
 /******************define 区******************/
 extern unsigned long (*_evthread_id_fn)(void);
@@ -225,10 +268,23 @@ struct event {  //事件处理器结构体
     void *ev_arg;//事件回调函数的参数
 };
 
-struct event_list {					\
-	struct event *tqh_first;			\
-	struct event **tqh_last;			\
+struct event_list {
+	struct event *tqh_first;
+	struct event **tqh_last;
 }
+struct evmap_signal {
+	struct event_list events;
+};
+
+struct evmap_io {
+	struct event_list events;
+	ev_uint16_t nread;
+	ev_uint16_t nwrite;
+};
+struct event_signal_map {
+	void **entries;
+	int nentries;
+};
 struct eventop {
 
 	const char *name;
@@ -402,11 +458,11 @@ struct event_base {
     int n_common_timeouts;
     int n_common_timeouts_allocated;
     struct deferred_cb_queue defer_queue;
-    struct event_io_map io;
-    struct event_signal_map sigmap;
+    struct event_io_map io;//io事件处理器数组  与信号数据结构一致  数据结构放于有道笔记
+    struct event_signal_map sigmap;//存放信号事件处理器数组
     struct event_list eventqueue;
     struct timeval event_tv;
-    struct min_heap timeheap;
+    struct min_heap timeheap;//定时TIMEOUT事件处理器数组
     struct timeval tv_cache;
 
 #if defined(_EVENT_HAVE_CLOCK_GETTIME) && defined(CLOCK_MONOTONIC)
