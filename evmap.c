@@ -386,8 +386,13 @@ evmap_io_del(struct event_base *base, evutil_socket_t fd, struct event *ev)
 	return (retval);
 }
 
-void
-evmap_io_active(struct event_base *base, evutil_socket_t fd, short events)
+/**
+ * 根据文件描述符取出事件处理器列表
+ * @param base
+ * @param fd
+ * @param events
+ */
+void evmap_io_active(struct event_base *base, evutil_socket_t fd, short events)
 {
 	struct event_io_map *io = &base->io;
 	struct evmap_io *ctx;
@@ -396,9 +401,12 @@ evmap_io_active(struct event_base *base, evutil_socket_t fd, short events)
 #ifndef EVMAP_USE_HT
 	EVUTIL_ASSERT(fd < io->nentries);
 #endif
+	//根据文件描述符取出对应的事件处理器
 	GET_IO_SLOT(ctx, io, fd, evmap_io);
 
 	EVUTIL_ASSERT(ctx);
+	//循环事件处理器
+	//[fd1]=[事件处理器1，事件处理器2]
 	TAILQ_FOREACH(ev, &ctx->events, ev_io_next) {
 		if (ev->ev_events & events)
 			event_active_nolock(ev, ev->ev_events & events, 1);

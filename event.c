@@ -1080,8 +1080,7 @@ event_haveevents(struct event_base *base)
 }
 
 /* "closure" function called when processing active signal events */
-static inline void
-event_signal_closure(struct event_base *base, struct event *ev)
+static inline void event_signal_closure(struct event_base *base, struct event *ev)
 {
 	short ncalls;
 	int should_break;
@@ -1361,9 +1360,7 @@ event_persist_closure(struct event_base *base, struct event *ev)
   means we should stop processing any active events now.  Otherwise returns
   the number of non-internal events that we processed.
 */
-static int
-event_process_active_single_queue(struct event_base *base,
-    struct event_list *activeq)
+static int event_process_active_single_queue(struct event_base *base,struct event_list *activeq)
 {
 	struct event *ev;
 	int count = 0;
@@ -1371,10 +1368,10 @@ event_process_active_single_queue(struct event_base *base,
 	EVUTIL_ASSERT(activeq != NULL);
 
 	for (ev = TAILQ_FIRST(activeq); ev; ev = TAILQ_FIRST(activeq)) {
-		if (ev->ev_events & EV_PERSIST)
+		if (ev->ev_events & EV_PERSIST)//持续性事件移除
 			event_queue_remove(base, ev, EVLIST_ACTIVE);
 		else
-			event_del_internal(ev);
+			event_del_internal(ev);//内部事件移出
 		if (!(ev->ev_flags & EVLIST_INTERNAL))
 			++count;
 
@@ -1386,19 +1383,20 @@ event_process_active_single_queue(struct event_base *base,
 			ev->ev_callback));
 
 #ifndef _EVENT_DISABLE_THREAD_SUPPORT
-		base->current_event = ev;
+		base->current_event = ev;//当前在处理的事件处理器
 		base->current_event_waiters = 0;
 #endif
 
 		switch (ev->ev_closure) {
-		case EV_CLOSURE_SIGNAL:
+		case EV_CLOSURE_SIGNAL://处理信号事件处理器
 			event_signal_closure(base, ev);
 			break;
-		case EV_CLOSURE_PERSIST:
+		case EV_CLOSURE_PERSIST://处理持续性事件
 			event_persist_closure(base, ev);
 			break;
 		default:
 		case EV_CLOSURE_NONE:
+			//运行事件处理器的回调函数
 			EVBASE_RELEASE_LOCK(base, th_base_lock);
 			(*ev->ev_callback)(
 				ev->ev_fd, ev->ev_res, ev->ev_arg);
@@ -1406,6 +1404,7 @@ event_process_active_single_queue(struct event_base *base,
 		}
 
 		EVBASE_ACQUIRE_LOCK(base, th_base_lock);
+
 #ifndef _EVENT_DISABLE_THREAD_SUPPORT
 		base->current_event = NULL;
 		if (base->current_event_waiters) {
@@ -1458,17 +1457,18 @@ event_process_deferred_callbacks(struct deferred_cb_queue *queue, int *breakptr)
  * process before higher priorities.  Low priority events can starve high
  * priority ones.
  */
-
-static int
-event_process_active(struct event_base *base)
+//处理就绪的事件处理器
+static int event_process_active(struct event_base *base)
 {
 	/* Caller must hold th_base_lock */
 	struct event_list *activeq = NULL;
 	int i, c = 0;
 
 	for (i = 0; i < base->nactivequeues; ++i) {
+		//从队列取出事件
 		if (TAILQ_FIRST(&base->activequeues[i]) != NULL) {
-			base->event_running_priority = i;
+			base->event_running_priority = i;//保存在运行的第几个事件处理器
+			//得到事件处理器
 			activeq = &base->activequeues[i];
 			c = event_process_active_single_queue(base, activeq);
 			if (c < 0) {
@@ -2030,8 +2030,7 @@ event_add(struct event *ev, const struct timeval *tv)
  * works by writing a byte to one end of a socketpair, so that the event_base
  * listening on the other end will wake up as the corresponding event
  * triggers */
-static int
-evthread_notify_base_default(struct event_base *base)
+static int evthread_notify_base_default(struct event_base *base)
 {
 	char buf[1];
 	int r;
@@ -2341,8 +2340,7 @@ event_active(struct event *ev, int res, short ncalls)
 }
 
 
-void
-event_active_nolock(struct event *ev, int res, short ncalls)
+void event_active_nolock(struct event *ev, int res, short ncalls)
 {
 	struct event_base *base;
 
@@ -2366,6 +2364,7 @@ event_active_nolock(struct event *ev, int res, short ncalls)
 	if (ev->ev_pri < base->event_running_priority)
 		base->event_continue = 1;
 
+	//信号事件
 	if (ev->ev_events & EV_SIGNAL) {
 #ifndef _EVENT_DISABLE_THREAD_SUPPORT
 		if (base->current_event == ev && !EVBASE_IN_THREAD(base)) {
@@ -2626,8 +2625,7 @@ insert_common_timeout_inorder(struct common_timeout_list *ctl,
 	    ev_timeout_pos.ev_next_with_common_timeout);
 }
 
-static void
-event_queue_insert(struct event_base *base, struct event *ev, int queue)
+static void event_queue_insert(struct event_base *base, struct event *ev, int queue)
 {
 	EVENT_BASE_ASSERT_LOCKED(base);
 
@@ -2641,20 +2639,22 @@ event_queue_insert(struct event_base *base, struct event *ev, int queue)
 		return;
 	}
 
+	//非内部事件
 	if (~ev->ev_flags & EVLIST_INTERNAL)
 		base->event_count++;
 
 	ev->ev_flags |= queue;
-	switch (queue) {
+	switch (queue) {//事件队列
 	case EVLIST_INSERTED:
+		//把事件处理器放入eventqueue队列中
 		TAILQ_INSERT_TAIL(&base->eventqueue, ev, ev_next);
 		break;
-	case EVLIST_ACTIVE:
-		base->event_count_active++;
+	case EVLIST_ACTIVE://正在激活的事件队列
+		base->event_count_active++;//有就绪的事件发生时累加
 		TAILQ_INSERT_TAIL(&base->activequeues[ev->ev_pri],
 		    ev,ev_active_next);
 		break;
-	case EVLIST_TIMEOUT: {
+	case EVLIST_TIMEOUT: {//超时事件队列
 		if (is_common_timeout(&ev->ev_timeout, base)) {
 			struct common_timeout_list *ctl =
 			    get_common_timeout_list(base, &ev->ev_timeout);

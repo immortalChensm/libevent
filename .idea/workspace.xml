@@ -10,9 +10,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8e741331-7861-467f-8ef0-8b3d7850f43f" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/doc/epoll.c" beforeDir="false" afterPath="$PROJECT_DIR$/doc/epoll.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/doc/libevent_database.h" beforeDir="false" afterPath="$PROJECT_DIR$/doc/libevent_database.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/doc/libevent_function.c" beforeDir="false" afterPath="$PROJECT_DIR$/doc/libevent_function.c" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/epoll.c" beforeDir="false" afterPath="$PROJECT_DIR$/epoll.c" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/event.c" beforeDir="false" afterPath="$PROJECT_DIR$/event.c" afterDir="false" />
@@ -27,11 +24,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/event.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="271">
-              <caret line="2780" selection-start-line="2780" selection-end-line="2780" />
+            <state relative-caret-position="363">
+              <caret line="2544" column="27" selection-start-line="2544" selection-start-column="12" selection-end-line="2544" selection-end-column="27" />
               <folding>
                 <element signature="e#1579#1676#0" expanded="true" />
                 <element signature="e#2562#2600#0" expanded="true" />
@@ -50,6 +47,9 @@
                 <element signature="e#10816#11041#0" expanded="true" />
                 <element signature="e#11754#12234#0" expanded="true" />
                 <element signature="e#18785#18889#0" expanded="true" />
+                <element signature="e#52306#52349#0" expanded="true" />
+                <element signature="e#52525#52894#0" expanded="true" />
+                <element signature="e#70636#71033#0" expanded="true" />
                 <element signature="e#71832#72123#0" expanded="true" />
                 <element signature="e#72162#72469#0" expanded="true" />
                 <element signature="e#72491#72526#0" expanded="true" />
@@ -61,8 +61,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/evthread-internal.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="327">
-              <caret line="149" column="38" selection-start-line="149" selection-start-column="20" selection-end-line="149" selection-end-column="38" />
+            <state relative-caret-position="281">
+              <caret line="67" column="8" selection-start-line="67" selection-start-column="8" selection-end-line="67" selection-end-column="8" />
               <folding>
                 <element signature="e#1545#1557#0" expanded="true" />
                 <element signature="e#6896#11858#0" expanded="true" />
@@ -72,19 +72,10 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/include/event2/thread.h">
+        <entry file="file://$PROJECT_DIR$/compat/sys/queue.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-1659">
-              <caret line="116" column="2" lean-forward="true" selection-start-line="92" selection-end-line="116" selection-end-column="2" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/evthread.c">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-6125">
-              <caret line="62" column="2" lean-forward="true" selection-start-line="62" selection-start-column="2" selection-end-line="62" selection-end-column="2" />
+            <state relative-caret-position="271">
+              <caret line="365" column="20" selection-start-line="365" selection-start-column="8" selection-end-line="365" selection-end-column="20" />
             </state>
           </provider>
         </entry>
@@ -92,8 +83,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/doc/libevent_function.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="23">
-              <caret line="299" column="17" lean-forward="true" selection-start-line="299" selection-start-column="17" selection-end-line="299" selection-end-column="17" />
+            <state relative-caret-position="270">
+              <caret line="1192" column="23" selection-start-line="1192" selection-start-column="8" selection-end-line="1192" selection-end-column="23" />
               <folding>
                 <element signature="e#52#82#0" expanded="true" />
                 <element signature="e#2043#2249#0" expanded="true" />
@@ -105,16 +96,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/doc/libevent_database.h">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/evmap-internal.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-74">
-              <caret line="100" column="7" selection-start-line="100" selection-start-column="7" selection-end-line="100" selection-end-column="7" />
-              <folding>
-                <element signature="e#8604#8615#0" expanded="true" />
-                <element signature="e#8659#8666#0" expanded="true" />
-                <element signature="e#8701#8711#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="281">
+              <caret line="70" column="4" selection-start-line="70" selection-start-column="4" selection-end-line="70" selection-end-column="4" />
             </state>
           </provider>
         </entry>
@@ -122,8 +108,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/epoll.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="432">
-              <caret line="348" column="31" lean-forward="true" selection-start-line="348" selection-start-column="31" selection-end-line="348" selection-end-column="31" />
+            <state relative-caret-position="-2144">
+              <caret line="179" column="11" selection-start-line="179" selection-start-column="11" selection-end-line="179" selection-end-column="11" />
               <folding>
                 <element signature="e#1894#1912#0" expanded="true" />
               </folding>
@@ -132,10 +118,35 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/changelist-internal.h">
+        <entry file="file://$PROJECT_DIR$/evutil.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="281">
-              <caret line="69" column="8" selection-start-line="69" selection-start-column="8" selection-end-line="69" selection-end-column="8" />
+            <state relative-caret-position="83">
+              <caret line="421" column="1" lean-forward="true" selection-start-line="421" selection-start-column="1" selection-end-line="421" selection-end-column="1" />
+              <folding>
+                <element signature="e#7655#7822#0" expanded="true" />
+                <element signature="e#8625#8861#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/doc/reactor.c">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-3066" />
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/signal.c">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="685">
+              <caret line="162" column="31" selection-start-line="162" selection-start-column="12" selection-end-line="162" selection-end-column="31" />
+              <folding>
+                <element signature="e#6609#6629#0" expanded="true" />
+                <element signature="e#7631#7927#0" expanded="true" />
+                <element signature="e#10619#10660#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -143,17 +154,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/evmap.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="281">
-              <caret line="201" selection-start-line="201" selection-end-line="201" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/doc/event_macro.h">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="271">
-              <caret line="143" column="8" selection-start-line="143" selection-start-column="8" selection-end-line="143" selection-end-column="8" />
+            <state relative-caret-position="524">
+              <caret line="376" column="22" selection-start-line="376" selection-start-column="19" selection-end-line="376" selection-end-column="22" />
             </state>
           </provider>
         </entry>
@@ -162,36 +164,36 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>EVENT_CHANGELIST_FDINFO_SIZE</find>
-      <find>evutil_socketpair</find>
-      <find>EVLIST_INTERNAL</find>
-      <find>event_priority_set</find>
-      <find>evsig_init</find>
       <find>evsig_add</find>
-      <find>evsig_del</find>
-      <find>event_base_priority_init</find>
-      <find>EVTHREAD_LOCKTYPE_RECURSIVE</find>
-      <find>evthread_lock_callbacks</find>
-      <find>EVTHREAD_ALLOC_LOCK</find>
-      <find>_evthread_lock_fns</find>
-      <find>EV_FEATURE_ET</find>
-      <find>_EVUTIL_NIL_STMT</find>
-      <find>EVTHREAD_ALLOC_COND</find>
-      <find>_evthread_cond_fns</find>
-      <find>event_changelist_init</find>
-      <find>evthread_notify_base_eventfd</find>
-      <find>evutil_timerclear</find>
-      <find>evthread_notify_drain_default</find>
-      <find>evthread_notify_drain_eventfd</find>
-      <find>EV_ET</find>
-      <find>epoll_nochangelist_add</find>
-      <find>evmap_make_space</find>
-      <find>evthread_make_base_notifiable</find>
-      <find>event_add</find>
-      <find>event_add_internal</find>
-      <find>evthread_notify_base_default</find>
       <find>event_signal_map</find>
-      <find>evmap_io_add</find>
+      <find>event_init</find>
+      <find>epoll_nochangelist_add</find>
+      <find>evmap_io_active</find>
+      <find>TAILQ_INSERT_TAIL</find>
+      <find>evthread_notify_base</find>
+      <find>event_queue_insert</find>
+      <find>event_signal_closure</find>
+      <find>event_base_loop</find>
+      <find>evsig_base_fd</find>
+      <find>event_add_internal</find>
+      <find>event_assign</find>
+      <find>evthread_make_base_notifiable</find>
+      <find>evsig_init</find>
+      <find>event_add</find>
+      <find>evmap_signal_add</find>
+      <find>evsig_handler</find>
+      <find>evsig_cb</find>
+      <find>evmap_signal_active</find>
+      <find>event_active_nolock</find>
+      <find>event_process_active</find>
+      <find>event_queue_remove</find>
+      <find>TAILQ_REMOVE</find>
+      <find>event_del_internal</find>
+      <find>evmap_io_del</find>
+      <find>dispatch</find>
+      <find>evsig_set_base</find>
+      <find>timeout_process</find>
+      <find>evutil_timercmp</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -208,13 +210,13 @@
         <option value="$PROJECT_DIR$/README" />
         <option value="$PROJECT_DIR$/README.md" />
         <option value="$PROJECT_DIR$/doc/epoll.c" />
-        <option value="$PROJECT_DIR$/evmap.c" />
-        <option value="$PROJECT_DIR$/signal.c" />
         <option value="$PROJECT_DIR$/doc/libevent_database.h" />
         <option value="$PROJECT_DIR$/doc/event_macro.h" />
-        <option value="$PROJECT_DIR$/event.c" />
         <option value="$PROJECT_DIR$/epoll.c" />
         <option value="$PROJECT_DIR$/doc/libevent_function.c" />
+        <option value="$PROJECT_DIR$/event.c" />
+        <option value="$PROJECT_DIR$/signal.c" />
+        <option value="$PROJECT_DIR$/evmap.c" />
       </list>
     </option>
   </component>
@@ -314,16 +316,15 @@
       <workItem from="1585098590587" duration="10343000" />
       <workItem from="1585187216214" duration="26014000" />
       <workItem from="1585271605252" duration="25413000" />
-      <workItem from="1585358472842" duration="20080000" />
+      <workItem from="1585358472842" duration="29840000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="85367000" />
+    <option name="totallyTimeSpent" value="95127000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
-    <editor active="true" />
     <layout>
       <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.14712153" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
@@ -349,13 +350,6 @@
     <option name="version" value="1" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/config.sub">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="268">
-          <caret line="13" column="26" selection-start-line="13" selection-start-column="26" selection-end-line="13" selection-end-column="26" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/configure">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="429">
@@ -524,31 +518,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/compat/sys/queue.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="7130">
-          <caret line="310" column="21" selection-start-line="310" selection-start-column="8" selection-end-line="310" selection-end-column="21" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/log-internal.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1219">
           <caret line="53" column="8" selection-start-line="53" selection-start-column="8" selection-end-line="53" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/evmap-internal.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1771">
-          <caret line="77" column="20" selection-start-line="77" selection-start-column="5" selection-end-line="77" selection-end-column="20" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/util-internal.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4531">
-          <caret line="197" column="8" selection-start-line="197" selection-start-column="8" selection-end-line="197" selection-end-column="8" />
         </state>
       </provider>
     </entry>
@@ -589,59 +562,12 @@
         <state relative-caret-position="-207" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/evutil.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="206">
-          <caret line="425" lean-forward="true" selection-start-line="425" selection-end-line="445" selection-end-column="1" />
-          <folding>
-            <element signature="e#7655#7822#0" expanded="true" />
-            <element signature="e#8625#8861#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/include/event2/util.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="298">
           <caret line="390" selection-start-line="390" selection-end-line="398" selection-end-column="15" />
           <folding>
             <element signature="e#12226#12272#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ChangeLog">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="298">
-          <caret line="680" column="25" selection-start-line="680" selection-start-column="25" selection-end-line="680" selection-end-column="25" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/evsignal-internal.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="281">
-          <caret line="41" column="16" selection-start-line="41" selection-start-column="11" selection-end-line="41" selection-end-column="16" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/signal.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-2006">
-          <caret line="92" column="28" selection-start-line="92" selection-start-column="28" selection-end-line="92" selection-end-column="28" />
-          <folding>
-            <element signature="e#5567#5707#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/event-internal.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="271">
-          <caret line="214" column="23" selection-start-line="214" selection-start-column="23" selection-end-line="214" selection-end-column="23" />
-          <folding>
-            <element signature="e#1606#1618#0" expanded="true" />
-            <element signature="e#4467#4704#0" expanded="true" />
-            <element signature="e#9212#9438#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -660,17 +586,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/evthread-internal.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="327">
-          <caret line="149" column="38" selection-start-line="149" selection-start-column="20" selection-end-line="149" selection-end-column="38" />
-          <folding>
-            <element signature="e#1545#1557#0" expanded="true" />
-            <element signature="e#6896#11858#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/changelist-internal.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="281">
@@ -678,27 +593,146 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/evmap.c">
+    <entry file="file://$PROJECT_DIR$/doc/libevent_database.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="271">
+          <caret line="338" column="28" selection-start-line="338" selection-start-column="28" selection-end-line="338" selection-end-column="28" />
+          <folding>
+            <element signature="e#8604#8615#0" expanded="true" />
+            <element signature="e#8659#8666#0" expanded="true" />
+            <element signature="e#8701#8711#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/evsignal-internal.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="568">
+          <caret line="61" column="4" selection-start-line="61" selection-start-column="4" selection-end-line="61" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/util-internal.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="281">
-          <caret line="201" selection-start-line="201" selection-end-line="201" />
+          <caret line="197" column="8" selection-start-line="197" selection-start-column="8" selection-end-line="197" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ChangeLog">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="298">
+          <caret line="680" column="25" selection-start-line="680" selection-start-column="25" selection-end-line="680" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/event-internal.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="281">
+          <caret line="240" column="16" lean-forward="true" selection-start-line="240" selection-start-column="16" selection-end-line="240" selection-end-column="16" />
+          <folding>
+            <element signature="e#1606#1618#0" expanded="true" />
+            <element signature="e#4467#4704#0" expanded="true" />
+            <element signature="e#9212#9438#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/doc/event_macro.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="281">
+          <caret line="88" column="8" selection-start-line="88" selection-start-column="8" selection-end-line="88" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/signal.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="685">
+          <caret line="162" column="31" selection-start-line="162" selection-start-column="12" selection-end-line="162" selection-end-column="31" />
+          <folding>
+            <element signature="e#6609#6629#0" expanded="true" />
+            <element signature="e#7631#7927#0" expanded="true" />
+            <element signature="e#10619#10660#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/evmap-internal.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="281">
+          <caret line="70" column="4" selection-start-line="70" selection-start-column="4" selection-end-line="70" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/evthread-internal.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="281">
+          <caret line="67" column="8" selection-start-line="67" selection-start-column="8" selection-end-line="67" selection-end-column="8" />
+          <folding>
+            <element signature="e#1545#1557#0" expanded="true" />
+            <element signature="e#6896#11858#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/compat/sys/queue.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="271">
+          <caret line="365" column="20" selection-start-line="365" selection-start-column="8" selection-end-line="365" selection-end-column="20" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/evmap.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="524">
+          <caret line="376" column="22" selection-start-line="376" selection-start-column="19" selection-end-line="376" selection-end-column="22" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/epoll.c">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="432">
-          <caret line="348" column="31" lean-forward="true" selection-start-line="348" selection-start-column="31" selection-end-line="348" selection-end-column="31" />
+        <state relative-caret-position="-2144">
+          <caret line="179" column="11" selection-start-line="179" selection-start-column="11" selection-end-line="179" selection-end-column="11" />
           <folding>
             <element signature="e#1894#1912#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/doc/reactor.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-3066" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/doc/libevent_function.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="270">
+          <caret line="1192" column="23" selection-start-line="1192" selection-start-column="8" selection-end-line="1192" selection-end-column="23" />
+          <folding>
+            <element signature="e#52#82#0" expanded="true" />
+            <element signature="e#2043#2249#0" expanded="true" />
+            <element signature="e#2521#2944#0" expanded="true" />
+            <element signature="e#22519#22801#0" expanded="true" />
+            <element signature="e#22843#23124#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/evutil.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="83">
+          <caret line="421" column="1" lean-forward="true" selection-start-line="421" selection-start-column="1" selection-end-line="421" selection-end-column="1" />
+          <folding>
+            <element signature="e#7655#7822#0" expanded="true" />
+            <element signature="e#8625#8861#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/event.c">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="271">
-          <caret line="2780" selection-start-line="2780" selection-end-line="2780" />
+        <state relative-caret-position="363">
+          <caret line="2544" column="27" selection-start-line="2544" selection-start-column="12" selection-end-line="2544" selection-end-column="27" />
           <folding>
             <element signature="e#1579#1676#0" expanded="true" />
             <element signature="e#2562#2600#0" expanded="true" />
@@ -717,42 +751,12 @@
             <element signature="e#10816#11041#0" expanded="true" />
             <element signature="e#11754#12234#0" expanded="true" />
             <element signature="e#18785#18889#0" expanded="true" />
+            <element signature="e#52306#52349#0" expanded="true" />
+            <element signature="e#52525#52894#0" expanded="true" />
+            <element signature="e#70636#71033#0" expanded="true" />
             <element signature="e#71832#72123#0" expanded="true" />
             <element signature="e#72162#72469#0" expanded="true" />
             <element signature="e#72491#72526#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/doc/event_macro.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="271">
-          <caret line="143" column="8" selection-start-line="143" selection-start-column="8" selection-end-line="143" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/doc/libevent_function.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="23">
-          <caret line="299" column="17" lean-forward="true" selection-start-line="299" selection-start-column="17" selection-end-line="299" selection-end-column="17" />
-          <folding>
-            <element signature="e#52#82#0" expanded="true" />
-            <element signature="e#2043#2249#0" expanded="true" />
-            <element signature="e#2521#2944#0" expanded="true" />
-            <element signature="e#22519#22801#0" expanded="true" />
-            <element signature="e#22843#23124#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/doc/libevent_database.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-74">
-          <caret line="100" column="7" selection-start-line="100" selection-start-column="7" selection-end-line="100" selection-end-column="7" />
-          <folding>
-            <element signature="e#8604#8615#0" expanded="true" />
-            <element signature="e#8659#8666#0" expanded="true" />
-            <element signature="e#8701#8711#0" expanded="true" />
           </folding>
         </state>
       </provider>

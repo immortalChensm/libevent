@@ -365,8 +365,7 @@ epoll_nochangelist_del(struct event_base *base, evutil_socket_t fd,
 	return epoll_apply_one_change(base, base->evbase, &ch);
 }
 
-static int
-epoll_dispatch(struct event_base *base, struct timeval *tv)
+static int epoll_dispatch(struct event_base *base, struct timeval *tv)
 {
 	struct epollop *epollop = base->evbase;
 	struct epoll_event *events = epollop->events;

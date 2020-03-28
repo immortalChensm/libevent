@@ -1032,6 +1032,7 @@ struct event_base *event_base_new_with_config(const struct event_config *cfg)
                             EVTHREAD_LOCKTYPE_RECURSIVE);
         base->defer_queue.lock = base->th_base_lock;
         EVTHREAD_ALLOC_COND(base->current_event_cond);
+        //添加内部的I/O事件处理器【epoll内核注册并监听】
         r = evthread_make_base_notifiable(base);
         if (r<0) {
             event_warnx("%s: Unable to make base notifiable.", __func__);
@@ -1177,7 +1178,7 @@ int event_base_loop(struct event_base *base, int flags)
 
         clear_time_cache(base);
 
-        //reactor事件调度
+        //reactor事件调度 有事件就绪就会把就绪的事件处理器全部插入请求队列中
         res = evsel->dispatch(base, tv_p);
 
         if (res == -1) {
@@ -1191,7 +1192,9 @@ int event_base_loop(struct event_base *base, int flags)
 
         timeout_process(base);
 
+        //检测是否有就绪的事件
         if (N_ACTIVE_CALLBACKS(base)) {
+            //处理事件处理器
             int n = event_process_active(base);
             if ((flags & EVLOOP_ONCE)
                 && N_ACTIVE_CALLBACKS(base) == 0

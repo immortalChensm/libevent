@@ -306,7 +306,7 @@ static int evsig_add(struct event_base *base, evutil_socket_t evsignal, short ol
 		goto err;
 	}
 
-
+	//添加前面【如epoll_init初始化好的全局信号事件处理器】
 	if (!sig->ev_signal_added) {
 		if (event_add(&sig->ev_signal, NULL))
 			goto err;
