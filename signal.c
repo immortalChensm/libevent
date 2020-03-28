@@ -168,11 +168,7 @@ evsig_cb(evutil_socket_t fd, short what, void *arg)
 int
 evsig_init(struct event_base *base)
 {
-	/*
-	 * Our signal handler is going to write to one end of the socket
-	 * pair to wake up our event loop.  The event loop then scans for
-	 * signals that got delivered.
-	 */
+
 	//创建全双工的流管道并把创建的管道保存在event_base成员中
 	if (evutil_socketpair(
 		    AF_UNIX, SOCK_STREAM, 0, base->sig.ev_signal_pair) == -1) {
@@ -214,8 +210,7 @@ evsig_init(struct event_base *base)
 /* Helper: set the signal handler for evsignal to handler in base, so that
  * we can restore the original handler when we clear the current one. */
 int
-_evsig_set_handler(struct event_base *base,
-    int evsignal, void (__cdecl *handler)(int))
+_evsig_set_handler(struct event_base *base,int evsignal, void (__cdecl *handler)(int))
 {
 #ifdef _EVENT_HAVE_SIGACTION
 	struct sigaction sa;
@@ -259,7 +254,7 @@ _evsig_set_handler(struct event_base *base,
 	sa.sa_handler = handler;
 	sa.sa_flags |= SA_RESTART;
 	sigfillset(&sa.sa_mask);
-
+	//安装信号【中断】处理函数
 	if (sigaction(evsignal, &sa, sig->sh_old[evsignal]) == -1) {
 		event_warn("sigaction");
 		mm_free(sig->sh_old[evsignal]);
@@ -299,10 +294,13 @@ static int evsig_add(struct event_base *base, evutil_socket_t evsignal, short ol
 		    base, evsig_base, base->evsel->name);
 	}
 	evsig_base = base;
+	//信号事件添加次数记录【全局变量】
 	evsig_base_n_signals_added = ++sig->ev_n_signals_added;
+	//信号事件通知的文件描述符【全局变量】
 	evsig_base_fd = base->sig.ev_signal_pair[0];
 	EVSIGBASE_UNLOCK();
 
+	//设置信号【中断】处理函数
 	event_debug(("%s: %d: changing signal handler", __func__, (int)evsignal));
 	if (_evsig_set_handler(base, (int)evsignal, evsig_handler) == -1) {
 		goto err;
@@ -371,9 +369,8 @@ evsig_del(struct event_base *base, evutil_socket_t evsignal, short old, short ev
 
 	return (_evsig_restore_handler(base, (int)evsignal));
 }
-
-static void __cdecl
-evsig_handler(int sig)
+//全局中断信号处理函数
+static void __cdecl evsig_handler(int sig)
 {
 	int save_errno = errno;
 #ifdef WIN32
@@ -392,6 +389,7 @@ evsig_handler(int sig)
 	signal(sig, evsig_handler);
 #endif
 
+	//信息产生时，给文件描述符【全局变量保存好的】发送产生的中断信号数值
 	/* Wake up our notification mechanism */
 	msg = sig;
 	send(evsig_base_fd, (char*)&msg, 1, 0);

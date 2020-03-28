@@ -1670,6 +1670,7 @@ event_base_loop(struct event_base *base, int flags)
 
 		update_time_cache(base);
 
+		//处理定时事件处理器接口
 		timeout_process(base);
 
 		if (N_ACTIVE_CALLBACKS(base)) {
@@ -2345,6 +2346,7 @@ event_active_nolock(struct event *ev, int res, short ncalls)
 {
 	struct event_base *base;
 
+
 	event_debug(("event_active: %p (fd "EV_SOCK_FMT"), res %d, callback %p",
 		ev, EV_SOCK_ARG(ev->ev_fd), (int)res, ev->ev_callback));
 
@@ -2813,7 +2815,7 @@ evthread_notify_drain_default(evutil_socket_t fd, short what, void *arg)
 int
 evthread_make_base_notifiable(struct event_base *base)
 {
-    //读和写回调函数
+    //读和写默认回调函数
 	void (*cb)(evutil_socket_t, short, void *) = evthread_notify_drain_default;
 	int (*notify)(struct event_base *) = evthread_notify_base_default;
 
@@ -2824,10 +2826,12 @@ evthread_make_base_notifiable(struct event_base *base)
 	if (base->th_notify_fd[0] >= 0)
 		return 0;
 
+	//如果支持eventfd函数
 #if defined(_EVENT_HAVE_EVENTFD) && defined(_EVENT_HAVE_SYS_EVENTFD_H)
 #ifndef EFD_CLOEXEC
 #define EFD_CLOEXEC 0
 #endif
+	//创建1个文件描述符
 	base->th_notify_fd[0] = eventfd(0, EFD_CLOEXEC);//返回一个文件描述符 eventfd
 	if (base->th_notify_fd[0] >= 0) {
 		evutil_make_socket_closeonexec(base->th_notify_fd[0]);
@@ -2835,6 +2839,7 @@ evthread_make_base_notifiable(struct event_base *base)
 		cb = evthread_notify_drain_eventfd;
 	}
 #endif
+	//如果支持管道
 #if defined(_EVENT_HAVE_PIPE)
 	if (base->th_notify_fd[0] < 0) {
 		if ((base->evsel->features & EV_FEATURE_FDS)) {
@@ -2864,19 +2869,13 @@ evthread_make_base_notifiable(struct event_base *base)
 			evutil_make_socket_closeonexec(base->th_notify_fd[1]);
 		}
 	}
-
+	//将文件设置为非阻塞模式
 	evutil_make_socket_nonblocking(base->th_notify_fd[0]);
 
+	//存储通知函数地址
 	base->th_notify_fn = notify;
 
-	/*
-	  Making the second socket nonblocking is a bit subtle, given that we
-	  ignore any EAGAIN returns when writing to it, and you don't usally
-	  do that for a nonblocking socket. But if the kernel gives us EAGAIN,
-	  then there's no need to add any more data to the buffer, since
-	  the main thread is already either about to wake up and drain it,
-	  or woken up and in the process of draining it.
-	*/
+	//如果是管道就会有2个文件描述符
 	if (base->th_notify_fd[1] > 0)
 		evutil_make_socket_nonblocking(base->th_notify_fd[1]);
 

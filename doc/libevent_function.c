@@ -2,6 +2,7 @@
 // Created by 1655664358@qq.com on 2020/3/26.
 //
 #include "libevent_database.h"
+#include "event_macro.h"
 #include "epoll.c"
 
 void min_heap_ctor(min_heap_t* s) {
@@ -96,6 +97,18 @@ static void detect_monotonic(void)
 #endif
 }
 
+int evutil_gettimeofday(struct timeval *tv, struct timezone *tz)
+{
+    struct _timeb tb;
+
+    if (tv == NULL)
+        return -1;
+    //获取到毫秒级的时间
+    _ftime(&tb);
+    tv->tv_sec = (long) tb.time;
+    tv->tv_usec = ((int) tb.millitm) * 1000;
+    return 0;
+}
 static int gettime(struct event_base *base, struct timeval *tp)
 {
 
@@ -116,6 +129,7 @@ static int gettime(struct event_base *base, struct timeval *tp)
 		if (base->last_updated_clock_diff + CLOCK_SYNC_INTERVAL
 		    < ts.tv_sec) {
 			struct timeval tv;
+			//给tv变量两赋上时间精确到纳秒
 			evutil_gettimeofday(&tv,NULL);
 			evutil_timersub(&tv, tp, &base->tv_clock_diff);
 			base->last_updated_clock_diff = ts.tv_sec;
@@ -248,6 +262,7 @@ int event_assign(struct event *ev, struct event_base *base, evutil_socket_t fd, 
     ev->ev_ncalls = 0;
     ev->ev_pncalls = NULL;
 
+    //信号事件
     if (events & EV_SIGNAL) {
         if ((events & (EV_READ|EV_WRITE)) != 0) {
             event_warnx("%s: EV_SIGNAL is not compatible with "
@@ -256,6 +271,7 @@ int event_assign(struct event *ev, struct event_base *base, evutil_socket_t fd, 
         }
         ev->ev_closure = EV_CLOSURE_SIGNAL;
     } else {
+        //持续性事件
         if (events & EV_PERSIST) {
             evutil_timerclear(&ev->ev_io_timeout);
             ev->ev_closure = EV_CLOSURE_PERSIST;
@@ -292,11 +308,29 @@ int evmap_io_add(struct event_base *base, evutil_socket_t fd, struct event *ev)
         return 0;
 
 #ifndef EVMAP_USE_HT
+    //创建I/O事件处理器数组
     if (fd >= io->nentries) {
         if (evmap_make_space(io, fd, sizeof(struct evmap_io *)) == -1)
             return (-1);
     }
 #endif
+
+    /**
+     *
+#define GET_SIGNAL_SLOT_AND_CTOR(x, map, slot, type, ctor, fdinfo_len)
+if ((map)->entries[slot] == NULL) {
+(map)->entries[slot] =	mm_calloc(1,sizeof(struct type)+fdinfo_len);
+(ctor)((struct type *)(map)->entries[slot]);
+(x) = (struct type *)((map)->entries[slot]);
+
+#define GET_IO_SLOT_AND_CTOR(x,map,slot,type,ctor,fdinfo_len) GET_SIGNAL_SLOT_AND_CTOR(x,map,slot,type,ctor,fdinfo_len)
+     */
+
+    //文件描述符=evmap_io内存地址
+    //io->entries[fd] = mm_calloc(1,sizeof(struct evmap_io)+fdinfo_len)
+    //ctx = (struct evmap_io *)(io->entries[fd])
+    //ctx 操作是event_base->io成员【其实它是个数组】
+    //每添加一个io添加一个成员在event_base->io数组中
     GET_IO_SLOT_AND_CTOR(ctx, io, fd, evmap_io, evmap_io_init,
                          evsel->fdinfo_len);
 
@@ -331,9 +365,7 @@ int evmap_io_add(struct event_base *base, evutil_socket_t fd, struct event *ev)
 
     if (res) {
         void *extra = ((char*)ctx) + sizeof(struct evmap_io);
-        /* XXX(niels): we cannot mix edge-triggered and
-         * level-triggered, we should probably assert on
-         * this. */
+        //向epoll或是其它IO复用函数【我这里默认以epoll使用】内核事件表中注册读写就绪事件
         if (evsel->add(base, ev->ev_fd,
                        old, (ev->ev_events & EV_ET) | res, extra) == -1)
             return (-1);
@@ -889,6 +921,8 @@ evutil_make_socket_closeonexec(base->th_notify_fd[1]);
     if (base->th_notify_fd[1] > 0)
         evutil_make_socket_nonblocking(base->th_notify_fd[1]);
 
+
+    //给指定的文件IO创建事件处理器
     event_assign(&base->th_notify, base, base->th_notify_fd[0],
                  EV_READ|EV_PERSIST, cb, base);
 
@@ -898,15 +932,28 @@ evutil_make_socket_closeonexec(base->th_notify_fd[1]);
     return event_add(&base->th_notify, NULL);
 }
 
+
+static int evthread_notify_base_eventfd(struct event_base *base)
+{
+    ev_uint64_t msg = 1;
+    int r;
+    do {
+        r = write(base->th_notify_fd[0], (void*) &msg, sizeof(msg));
+    } while (r < 0 && errno == EAGAIN);
+
+    return (r < 0) ? -1 : 0;
+}
 struct event_base *event_base_new_with_config(const struct event_config *cfg)
 {
     int i;
     struct event_base *base;
     int should_check_environment;
 
+    //给event_base赋初始内存值
     if ((base = mm_calloc(1, sizeof(struct event_base))) == NULL) {
         return NULL;
     }
+    //测试是否支持获取系统时间
     detect_monotonic();
     gettime(base, &base->event_tv);
     min_heap_ctor(&base->timeheap);
@@ -976,7 +1023,7 @@ struct event_base *event_base_new_with_config(const struct event_config *cfg)
     }
 
     /* prepare for threading */
-
+//传递cfg参数且支持线程时
 #ifndef _EVENT_DISABLE_THREAD_SUPPORT
     if (EVTHREAD_LOCKING_ENABLED() &&
         (!cfg || !(cfg->flags & EVENT_BASE_FLAG_NOLOCK))) {

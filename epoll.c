@@ -104,8 +104,7 @@ const struct eventop epollops = {
  */
 #define MAX_EPOLL_TIMEOUT_MSEC (35*60*1000)
 //在创建event_base 如event_init时运行此函数【看系统选择的IO多路复用是啥】
-static void *
-epoll_init(struct event_base *base)
+static void *epoll_init(struct event_base *base)
 {
 	int epfd;
 	struct epollop *epollop;
@@ -147,6 +146,7 @@ epoll_init(struct event_base *base)
 		base->evsel = &epollops_changelist;
 
 	//信号事件处理器封装初始操作
+	//signal.c
 	evsig_init(base);
 
 	return (epollop);
@@ -176,27 +176,15 @@ epoll_op_to_string(int op)
 	    "???";
 }
 
-static int
-epoll_apply_one_change(struct event_base *base,
-    struct epollop *epollop,
-    const struct event_change *ch)
+//向epoll内核事件表中注册读写就绪事件
+static int epoll_apply_one_change(struct event_base *base,struct epollop *epollop,const struct event_change *ch)
 {
 	struct epoll_event epev;
 	int op, events = 0;
 
 	if (1) {
-		/* The logic here is a little tricky.  If we had no events set
-		   on the fd before, we need to set op="ADD" and set
-		   events=the events we want to add.  If we had any events set
-		   on the fd before, and we want any events to remain on the
-		   fd, we need to say op="MOD" and set events=the events we
-		   want to remain.  But if we want to delete the last event,
-		   we say op="DEL" and set events=the remaining events.  What
-		   fun!
-		*/
 
-		/* TODO: Turn this into a switch or a table lookup. */
-
+		//添加事件
 		if ((ch->read_change & EV_CHANGE_ADD) ||
 		    (ch->write_change & EV_CHANGE_ADD)) {
 			/* If we are adding anything at all, we'll want to do
@@ -204,7 +192,7 @@ epoll_apply_one_change(struct event_base *base,
 			events = 0;
 			op = EPOLL_CTL_ADD;
 			if (ch->read_change & EV_CHANGE_ADD) {
-				events |= EPOLLIN;
+				events |= EPOLLIN;//读就绪事件
 			} else if (ch->read_change & EV_CHANGE_DEL) {
 				;
 			} else if (ch->old_events & EV_READ) {
@@ -218,25 +206,13 @@ epoll_apply_one_change(struct event_base *base,
 				events |= EPOLLOUT;
 			}
 			if ((ch->read_change|ch->write_change) & EV_ET)
-				events |= EPOLLET;
+				events |= EPOLLET;//边缘触发支持
 
 			if (ch->old_events) {
-				/* If MOD fails, we retry as an ADD, and if
-				 * ADD fails we will retry as a MOD.  So the
-				 * only hard part here is to guess which one
-				 * will work.  As a heuristic, we'll try
-				 * MOD first if we think there were old
-				 * events and ADD if we think there were none.
-				 *
-				 * We can be wrong about the MOD if the file
-				 * has in fact been closed and re-opened.
-				 *
-				 * We can be wrong about the ADD if the
-				 * the fd has been re-created with a dup()
-				 * of the same file that it was before.
-				 */
+				//有旧事件就是更新操作
 				op = EPOLL_CTL_MOD;
 			}
+			//删除事件
 		} else if ((ch->read_change & EV_CHANGE_DEL) ||
 		    (ch->write_change & EV_CHANGE_DEL)) {
 			/* If we're deleting anything, we'll want to do a MOD
@@ -266,8 +242,10 @@ epoll_apply_one_change(struct event_base *base,
 			return 0;
 
 		memset(&epev, 0, sizeof(epev));
+		//给epoll_event添加数据和事件【读写就绪事件】
 		epev.data.fd = ch->fd;
 		epev.events = events;
+		//向epoll内核事件表中注册读写就绪事件
 		if (epoll_ctl(epollop->epfd, op, ch->fd, &epev) == -1) {
 			if (op == EPOLL_CTL_MOD && errno == ENOENT) {
 				/* If a MOD operation fails with ENOENT, the
@@ -354,12 +332,11 @@ epoll_apply_changes(struct event_base *base)
 	return (r);
 }
 
-static int
-epoll_nochangelist_add(struct event_base *base, evutil_socket_t fd,
+static int epoll_nochangelist_add(struct event_base *base, evutil_socket_t fd,
     short old, short events, void *p)
 {
 	struct event_change ch;
-	ch.fd = fd;
+	ch.fd = fd;//文件描述符
 	ch.old_events = old;
 	ch.read_change = ch.write_change = 0;
 	if (events & EV_WRITE)
@@ -367,7 +344,7 @@ epoll_nochangelist_add(struct event_base *base, evutil_socket_t fd,
 		    (events & EV_ET);
 	if (events & EV_READ)
 		ch.read_change = EV_CHANGE_ADD |
-		    (events & EV_ET);
+		    (events & EV_ET);//0x01 | (0X02& EV_ET) 0x20=0X00|0X01
 
 	return epoll_apply_one_change(base, base->evbase, &ch);
 }

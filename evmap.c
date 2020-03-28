@@ -613,10 +613,7 @@ event_changelist_grow(struct event_changelist *changelist)
  * old_events field to old_events.
  */
 static struct event_change *
-event_changelist_get_or_construct(struct event_changelist *changelist,
-    evutil_socket_t fd,
-    short old_events,
-    struct event_changelist_fdinfo *fdinfo)
+event_changelist_get_or_construct(struct event_changelist *changelist,evutil_socket_t fd,short old_events,struct event_changelist_fdinfo *fdinfo)
 {
 	struct event_change *change;
 
