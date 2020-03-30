@@ -150,10 +150,17 @@ static const struct evconnlistener_ops evconnlistener_event_ops = {
 
 static void listener_read_cb(evutil_socket_t, short, void *);
 
-struct evconnlistener *
-evconnlistener_new(struct event_base *base,
-    evconnlistener_cb cb, void *ptr, unsigned flags, int backlog,
-    evutil_socket_t fd)
+/**
+ *
+ * @param base  event_base 对象
+ * @param cb 回调函数
+ * @param ptr 回调函数的参数
+ * @param flags 标志位
+ * @param backlog 监听队列长度
+ * @param fd 创建好的文件描述符
+ * @return
+ */
+struct evconnlistener *evconnlistener_new(struct event_base *base,evconnlistener_cb cb, void *ptr, unsigned flags, int backlog,evutil_socket_t fd)
 {
 	struct evconnlistener_event *lev;
 
@@ -167,6 +174,7 @@ evconnlistener_new(struct event_base *base,
 	}
 #endif
 
+	//开始监听socket
 	if (backlog > 0) {
 		if (listen(fd, backlog) < 0)
 			return NULL;
@@ -192,33 +200,46 @@ evconnlistener_new(struct event_base *base,
 	event_assign(&lev->listener, base, fd, EV_READ|EV_PERSIST,
 	    listener_read_cb, lev);
 
+	//将监听socket添加到epoll内核是进行监听
 	evconnlistener_enable(&lev->base);
 
 	return &lev->base;
 }
 
-struct evconnlistener *
-evconnlistener_new_bind(struct event_base *base, evconnlistener_cb cb,
-    void *ptr, unsigned flags, int backlog, const struct sockaddr *sa,
-    int socklen)
+/**
+ *
+ * @param base  event_base 对象
+ * @param cb  回调函数
+ * @param ptr  回调函数的参数
+ * @param flags  标志位  位于listener.h头文件中
+ * @param backlog  监听长度【队列】
+ * @param sa  socketaddr socket地址
+ * @param socklen
+ * @return
+ */
+struct evconnlistener *evconnlistener_new_bind(struct event_base *base, evconnlistener_cb cb,void *ptr, unsigned flags, int backlog, const struct sockaddr *sa,int socklen)
 {
 	struct evconnlistener *listener;
 	evutil_socket_t fd;
 	int on = 1;
+	//未传协议
 	int family = sa ? sa->sa_family : AF_UNSPEC;
 
 	if (backlog == 0)
 		return NULL;
 
+	//创建socket
 	fd = socket(family, SOCK_STREAM, 0);
 	if (fd == -1)
 		return NULL;
 
+	//将socket设置为非阻塞I/O
 	if (evutil_make_socket_nonblocking(fd) < 0) {
 		evutil_closesocket(fd);
 		return NULL;
 	}
 
+	//是否设置了运行此文件【socket文件】就关闭
 	if (flags & LEV_OPT_CLOSE_ON_EXEC) {
 		if (evutil_make_socket_closeonexec(fd) < 0) {
 			evutil_closesocket(fd);
@@ -226,10 +247,12 @@ evconnlistener_new_bind(struct event_base *base, evconnlistener_cb cb,
 		}
 	}
 
+	//设置keepalive功能
 	if (setsockopt(fd, SOL_SOCKET, SO_KEEPALIVE, (void*)&on, sizeof(on))<0) {
 		evutil_closesocket(fd);
 		return NULL;
 	}
+	//设置reuseaddr功能
 	if (flags & LEV_OPT_REUSEABLE) {
 		if (evutil_make_listen_socket_reuseable(fd) < 0) {
 			evutil_closesocket(fd);
@@ -237,6 +260,7 @@ evconnlistener_new_bind(struct event_base *base, evconnlistener_cb cb,
 		}
 	}
 
+	//绑定socket
 	if (sa) {
 		if (bind(fd, sa, socklen)<0) {
 			evutil_closesocket(fd);
@@ -244,8 +268,10 @@ evconnlistener_new_bind(struct event_base *base, evconnlistener_cb cb,
 		}
 	}
 
+	//监听socket
 	listener = evconnlistener_new(base, cb, ptr, flags, backlog, fd);
 	if (!listener) {
+		//创建失败直接close关掉
 		evutil_closesocket(fd);
 		return NULL;
 	}
@@ -304,8 +330,8 @@ evconnlistener_disable(struct evconnlistener *lev)
 static int
 event_listener_enable(struct evconnlistener *lev)
 {
-	struct evconnlistener_event *lev_e =
-	    EVUTIL_UPCAST(lev, struct evconnlistener_event, base);
+	struct evconnlistener_event *lev_e =EVUTIL_UPCAST(lev, struct evconnlistener_event, base);
+	//将监听socket 添加到内核事件表中
 	return event_add(&lev_e->listener, NULL);
 }
 
@@ -376,9 +402,13 @@ evconnlistener_set_error_cb(struct evconnlistener *lev,
 	lev->errorcb = errorcb;
 	UNLOCK(lev);
 }
-
-static void
-listener_read_cb(evutil_socket_t fd, short what, void *p)
+/**
+ * 处理客户端连接的socket 同时运行用户设置的回调函数
+ * @param fd
+ * @param what
+ * @param p
+ */
+static void listener_read_cb(evutil_socket_t fd, short what, void *p)
 {
 	struct evconnlistener *lev = p;
 	int err;
@@ -393,6 +423,7 @@ listener_read_cb(evutil_socket_t fd, short what, void *p)
 #else
 		socklen_t socklen = sizeof(ss);
 #endif
+		//接受客户端连接socket
 		evutil_socket_t new_fd = accept(fd, (struct sockaddr*)&ss, &socklen);
 		if (new_fd < 0)
 			break;
@@ -412,9 +443,10 @@ listener_read_cb(evutil_socket_t fd, short what, void *p)
 			return;
 		}
 		++lev->refcnt;
-		cb = lev->cb;
-		user_data = lev->user_data;
+		cb = lev->cb;//获取到用户设置的回调函数
+		user_data = lev->user_data;//用户设置的参数
 		UNLOCK(lev);
+		//执行用户的回调函数
 		cb(lev, new_fd, (struct sockaddr*)&ss, (int)socklen,
 		    user_data);
 		LOCK(lev);
@@ -430,6 +462,7 @@ listener_read_cb(evutil_socket_t fd, short what, void *p)
 		UNLOCK(lev);
 		return;
 	}
+	//如果连接出错还会影响设置的出错回调函数
 	if (lev->errorcb != NULL) {
 		++lev->refcnt;
 		errorcb = lev->errorcb;

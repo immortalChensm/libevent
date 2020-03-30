@@ -1540,6 +1540,7 @@ done:
 
 /* Adds data to an event buffer */
 
+//存储数据
 int
 evbuffer_add(struct evbuffer *buf, const void *data_in, size_t datlen)
 {

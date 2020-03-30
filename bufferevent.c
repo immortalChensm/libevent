@@ -163,6 +163,7 @@ bufferevent_run_deferred_callbacks_locked(struct deferred_cb *_, void *arg)
 }
 
 //运行bufferevent_setcb设置的回调函数
+//!!!bufferevent内置的读写事件处理器运行时会运行此函数!!!
 static void bufferevent_run_deferred_callbacks_unlocked(struct deferred_cb *_, void *arg)
 {
 	struct bufferevent_private *bufev_private = arg;
@@ -402,8 +403,13 @@ bufferevent_read_buffer(struct bufferevent *bufev, struct evbuffer *buf)
 	return (evbuffer_add_buffer(buf, bufev->input));
 }
 
-int
-bufferevent_enable(struct bufferevent *bufev, short event)
+/**
+ * 添加事件处理器【读或是写事件处理器】
+ * @param bufev
+ * @param event
+ * @return
+ */
+int bufferevent_enable(struct bufferevent *bufev, short event)
 {
 	struct bufferevent_private *bufev_private =
 	    EVUTIL_UPCAST(bufev, struct bufferevent_private, bev);

@@ -32,6 +32,7 @@ static const int PORT = 9995;
 static void listener_cb(struct evconnlistener *, evutil_socket_t,
     struct sockaddr *, int socklen, void *);
 static void conn_writecb(struct bufferevent *, void *);
+static void conn_readcb(struct bufferevent *, void *);
 static void conn_eventcb(struct bufferevent *, short, void *);
 static void signal_cb(evutil_socket_t, short, void *);
 
@@ -59,10 +60,7 @@ main(int argc, char **argv)
 	sin.sin_port = htons(PORT);
 
 	//创建socket监听事件处理器
-	listener = evconnlistener_new_bind(base, listener_cb, (void *)base,
-	    LEV_OPT_REUSEABLE|LEV_OPT_CLOSE_ON_FREE, -1,
-	    (struct sockaddr*)&sin,
-	    sizeof(sin));
+	listener = evconnlistener_new_bind(base, listener_cb, (void *)base,LEV_OPT_REUSEABLE, -1,(struct sockaddr*)&sin,sizeof(sin));
 
 	if (!listener) {
 		fprintf(stderr, "Could not create a listener!\n");
@@ -96,20 +94,32 @@ listener_cb(struct evconnlistener *listener, evutil_socket_t fd,
 	struct bufferevent *bev;
 
 	//创建fd上的读写事件处理器
-	bev = bufferevent_socket_new(base, fd, BEV_OPT_CLOSE_ON_FREE);
+	bev = bufferevent_socket_new(base, fd, 0);
 	if (!bev) {
 		fprintf(stderr, "Error constructing bufferevent!");
 		event_base_loopbreak(base);
 		return;
 	}
 	//给bev设置用户的写和异常回调函数
-	bufferevent_setcb(bev, NULL, conn_writecb, conn_eventcb, NULL);
+	bufferevent_setcb(bev, conn_readcb, conn_writecb, conn_eventcb, NULL);
 	//添加一个事件处理器【将写IO事件处理器的写事件添加到内核中】
-	bufferevent_enable(bev, EV_WRITE);
-	//删除一个事件处理器
-	bufferevent_disable(bev, EV_READ);
+	bufferevent_enable(bev, EV_READ);
 
-	bufferevent_write(bev, MESSAGE, strlen(MESSAGE));
+	//删除一个事件处理器
+	bufferevent_disable(bev, EV_WRITE);
+
+	//bufferevent_write(bev, MESSAGE, strlen(MESSAGE));
+}
+
+static void
+conn_readcb(struct bufferevent *bev, void *user_data)
+{
+	struct evbuffer *input = bufferevent_get_input(bev);
+	char message[1024];
+	bufferevent_read(bev,message, sizeof(message));
+	printf("%s\n",message);
+	bufferevent_disable(bev, EV_READ);
+	bufferevent_enable(bev, EV_WRITE);
 }
 
 static void
@@ -118,8 +128,13 @@ conn_writecb(struct bufferevent *bev, void *user_data)
 	struct evbuffer *output = bufferevent_get_output(bev);
 	if (evbuffer_get_length(output) == 0) {
 		printf("flushed answer\n");
-		bufferevent_free(bev);
+		//bufferevent_free(bev);
 	}
+	bufferevent_enable(bev, EV_READ);
+
+	//删除一个事件处理器
+	bufferevent_disable(bev, EV_WRITE);
+	bufferevent_write(bev, MESSAGE, strlen(MESSAGE));
 }
 
 static void

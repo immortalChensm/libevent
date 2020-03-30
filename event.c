@@ -1526,6 +1526,7 @@ event_loopexit(const struct timeval *tv)
 		    current_base, tv));
 }
 
+//加上这句话会让event_base_loop停止运行，进程会直接结束了
 int
 event_base_loopexit(struct event_base *event_base, const struct timeval *tv)
 {

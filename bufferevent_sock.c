@@ -267,6 +267,7 @@ bufferevent_writecb(evutil_socket_t fd, short event, void *arg)
 
 	if (evbuffer_get_length(bufev->output)) {
 		evbuffer_unfreeze(bufev->output, 1);
+		//写入数据到指定的fd
 		res = evbuffer_write_atmost(bufev->output, fd, atmost);
 		evbuffer_freeze(bufev->output, 1);
 		if (res == -1) {
@@ -316,6 +317,13 @@ bufferevent_writecb(evutil_socket_t fd, short event, void *arg)
 	_bufferevent_decref_and_unlock(bufev);
 }
 
+/**
+ * 给fd 创建好读写事件处理器同时设置其be_ops相关处理函数bufferevent_ops_socket
+ * @param base
+ * @param fd 文件描述符
+ * @param options
+ * @return
+ */
 struct bufferevent *bufferevent_socket_new(struct event_base *base, evutil_socket_t fd,int options)
 {
 	struct bufferevent_private *bufev_p;
