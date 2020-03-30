@@ -162,8 +162,8 @@ bufferevent_run_deferred_callbacks_locked(struct deferred_cb *_, void *arg)
 	_bufferevent_decref_and_unlock(bufev);
 }
 
-static void
-bufferevent_run_deferred_callbacks_unlocked(struct deferred_cb *_, void *arg)
+//运行bufferevent_setcb设置的回调函数
+static void bufferevent_run_deferred_callbacks_unlocked(struct deferred_cb *_, void *arg)
 {
 	struct bufferevent_private *bufev_private = arg;
 	struct bufferevent *bufev = &bufev_private->bev;
@@ -262,6 +262,7 @@ _bufferevent_run_eventcb(struct bufferevent *bufev, short what)
 		p->eventcb_pending |= what;
 		p->errno_pending = EVUTIL_SOCKET_ERROR();
 		if (!p->deferred.queued)
+			//开始调度
 			SCHEDULE_DEFERRED(p);
 	} else {
 		bufev->errorcb(bufev, what, bufev->cbarg);
@@ -269,18 +270,17 @@ _bufferevent_run_eventcb(struct bufferevent *bufev, short what)
 }
 
 int
-bufferevent_init_common(struct bufferevent_private *bufev_private,
-    struct event_base *base,
-    const struct bufferevent_ops *ops,
+bufferevent_init_common(struct bufferevent_private *bufev_private,struct event_base *base,const struct bufferevent_ops *ops,
     enum bufferevent_options options)
 {
 	struct bufferevent *bufev = &bufev_private->bev;
 
+	//给bufferevent_private->bev->input成员初始化
 	if (!bufev->input) {
 		if ((bufev->input = evbuffer_new()) == NULL)
 			return -1;
 	}
-
+//给bufferevent_private->bev->ouput成员初始化
 	if (!bufev->output) {
 		if ((bufev->output = evbuffer_new()) == NULL) {
 			evbuffer_free(bufev->input);
@@ -295,6 +295,7 @@ bufferevent_init_common(struct bufferevent_private *bufev_private,
 	evutil_timerclear(&bufev->timeout_read);
 	evutil_timerclear(&bufev->timeout_write);
 
+	//存储一个数组
 	bufev->be_ops = ops;
 
 	/*
@@ -341,9 +342,7 @@ bufferevent_init_common(struct bufferevent_private *bufev_private,
 }
 
 void
-bufferevent_setcb(struct bufferevent *bufev,
-    bufferevent_data_cb readcb, bufferevent_data_cb writecb,
-    bufferevent_event_cb eventcb, void *cbarg)
+bufferevent_setcb(struct bufferevent *bufev,bufferevent_data_cb readcb, bufferevent_data_cb writecb,bufferevent_event_cb eventcb, void *cbarg)
 {
 	BEV_LOCK(bufev);
 

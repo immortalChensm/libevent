@@ -2129,6 +2129,7 @@ event_add_internal(struct event *ev, const struct timeval *tv,
 		else if (ev->ev_events & EV_SIGNAL)
 			res = evmap_signal_add(base, (int)ev->ev_fd, ev);
 		if (res != -1)
+		    //记录哪些事件处理器已经插入了
 			event_queue_insert(base, ev, EVLIST_INSERTED);
 		if (res == 1) {
 			/* evmap says we need to notify the main thread. */
@@ -2137,6 +2138,7 @@ event_add_internal(struct event *ev, const struct timeval *tv,
 		}
 	}
 
+	//定时事件处理器的插入
 	/*
 	 * we should change the timeout state only if the previous event
 	 * addition succeeded.
@@ -2427,6 +2429,7 @@ event_deferred_cb_schedule(struct deferred_cb_queue *queue,
 		TAILQ_INSERT_TAIL(&queue->deferred_cb_list, cb, cb_next);
 		++queue->active_count;
 		if (queue->notify_fn)
+			//调用bufferevent->deferred_db回调
 			queue->notify_fn(queue, queue->notify_arg);
 	}
 	UNLOCK_DEFERRED_QUEUE(queue);
@@ -2555,6 +2558,7 @@ timeout_process(struct event_base *base)
 }
 
 /* Remove 'ev' from 'queue' (EVLIST_...) in base. */
+//处理处理器被处理时要移除
 static void
 event_queue_remove(struct event_base *base, struct event *ev, int queue)
 {
@@ -2645,7 +2649,7 @@ static void event_queue_insert(struct event_base *base, struct event *ev, int qu
 
 	ev->ev_flags |= queue;
 	switch (queue) {//事件队列
-	case EVLIST_INSERTED:
+	case EVLIST_INSERTED://记录，主要防止事件处理器重复插入
 		//把事件处理器放入eventqueue队列中
 		TAILQ_INSERT_TAIL(&base->eventqueue, ev, ev_next);
 		break;

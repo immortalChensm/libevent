@@ -218,7 +218,9 @@ bufferevent_writecb(evutil_socket_t fd, short event, void *arg)
 		what |= BEV_EVENT_TIMEOUT;
 		goto error;
 	}
+	//处理正在连接的客户端
 	if (bufev_p->connecting) {
+		//检测连接状态  正在连接中  连接错误  正常连接
 		int c = evutil_socket_finished_connecting(fd);
 		/* we need to fake the error if the connection was refused
 		 * immediately - usually connection to localhost on BSD */
@@ -247,6 +249,7 @@ bufferevent_writecb(evutil_socket_t fd, short event, void *arg)
 				goto done;
 			}
 #endif
+		//运行用户配置的回调事件函数
 			_bufferevent_run_eventcb(bufev,
 					BEV_EVENT_CONNECTED);
 			if (!(bufev->enabled & EV_WRITE) ||
@@ -313,9 +316,7 @@ bufferevent_writecb(evutil_socket_t fd, short event, void *arg)
 	_bufferevent_decref_and_unlock(bufev);
 }
 
-struct bufferevent *
-bufferevent_socket_new(struct event_base *base, evutil_socket_t fd,
-    int options)
+struct bufferevent *bufferevent_socket_new(struct event_base *base, evutil_socket_t fd,int options)
 {
 	struct bufferevent_private *bufev_p;
 	struct bufferevent *bufev;
@@ -325,9 +326,11 @@ bufferevent_socket_new(struct event_base *base, evutil_socket_t fd,
 		return bufferevent_async_new(base, fd, options);
 #endif
 
+	//创建bufferevent_private 对象
 	if ((bufev_p = mm_calloc(1, sizeof(struct bufferevent_private)))== NULL)
 		return NULL;
 
+	//初始化bufferevent_private->bev成员
 	if (bufferevent_init_common(bufev_p, base, &bufferevent_ops_socket,
 				    options) < 0) {
 		mm_free(bufev_p);
@@ -336,11 +339,13 @@ bufferevent_socket_new(struct event_base *base, evutil_socket_t fd,
 	bufev = &bufev_p->bev;
 	evbuffer_set_flags(bufev->output, EVBUFFER_FLAG_DRAINS_TO_FD);
 
+	//给bufferevent_private->bev->ev_read 和ev_write构建好读写事件处理器
 	event_assign(&bufev->ev_read, bufev->ev_base, fd,
 	    EV_READ|EV_PERSIST, bufferevent_readcb, bufev);
 	event_assign(&bufev->ev_write, bufev->ev_base, fd,
 	    EV_WRITE|EV_PERSIST, bufferevent_writecb, bufev);
 
+	//给bufferevent->private->bev->output->callbacks=bufferevent_socket_outbuf_cb设置值
 	evbuffer_add_cb(bufev->output, bufferevent_socket_outbuf_cb, bufev);
 
 	evbuffer_freeze(bufev->input, 0);
@@ -349,9 +354,7 @@ bufferevent_socket_new(struct event_base *base, evutil_socket_t fd,
 	return bufev;
 }
 
-int
-bufferevent_socket_connect(struct bufferevent *bev,
-    struct sockaddr *sa, int socklen)
+int bufferevent_socket_connect(struct bufferevent *bev,struct sockaddr *sa, int socklen)
 {
 	struct bufferevent_private *bufev_p =
 	    EVUTIL_UPCAST(bev, struct bufferevent_private, bev);
@@ -366,13 +369,16 @@ bufferevent_socket_connect(struct bufferevent *bev,
 	if (!bufev_p)
 		goto done;
 
+	//获取文件描述符
 	fd = bufferevent_getfd(bev);
 	if (fd < 0) {
 		if (!sa)
 			goto done;
+		//根据传递的参数创建一个监听socket
 		fd = socket(sa->sa_family, SOCK_STREAM, 0);
 		if (fd < 0)
 			goto done;
+		//设置为非阻塞模式
 		if (evutil_make_socket_nonblocking(fd)<0)
 			goto done;
 		ownfd = 1;
@@ -389,9 +395,10 @@ bufferevent_socket_connect(struct bufferevent *bev,
 			goto done;
 		} else
 #endif
+	//连接服务器端
 		r = evutil_socket_connect(&fd, sa, socklen);
 		if (r < 0)
-			goto freesock;
+			goto freesock;//socket连接失败
 	}
 #ifdef WIN32
 	/* ConnectEx() isn't always around, even when IOCP is enabled.
@@ -402,6 +409,7 @@ bufferevent_socket_connect(struct bufferevent *bev,
 		    EV_WRITE|EV_PERSIST, bufferevent_writecb, bev);
 	}
 #endif
+	//给它设置fd文件描述符
 	bufferevent_setfd(bev, fd);
 	if (r == 0) {
 		if (! be_socket_enable(bev, EV_WRITE)) {
@@ -409,14 +417,16 @@ bufferevent_socket_connect(struct bufferevent *bev,
 			result = 0;
 			goto done;
 		}
-	} else if (r == 1) {
+	} else if (r == 1) {//连接成功时
 		/* The connect succeeded already. How very BSD of it. */
 		result = 0;
-		bufev_p->connecting = 1;
+		bufev_p->connecting = 1;//正在连接中的socket
+		//写事件处理器，写事件，1
+		//插入到请求队列队列中
 		event_active(&bev->ev_write, EV_WRITE, 1);
 	} else {
 		/* The connect failed already.  How very BSD of it. */
-		bufev_p->connection_refused = 1;
+		bufev_p->connection_refused = 1;//拒绝连接中的socket
 		bufev_p->connecting = 1;
 		result = 0;
 		event_active(&bev->ev_write, EV_WRITE, 1);
@@ -425,6 +435,7 @@ bufferevent_socket_connect(struct bufferevent *bev,
 	goto done;
 
 freesock:
+	//出错时执行用户指定的出错回调函数并关闭连接
 	_bufferevent_run_eventcb(bev, BEV_EVENT_ERROR);
 	if (ownfd)
 		evutil_closesocket(fd);

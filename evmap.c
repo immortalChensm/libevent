@@ -470,8 +470,8 @@ evmap_signal_del(struct event_base *base, int sig, struct event *ev)
 	return (1);
 }
 
-void
-evmap_signal_active(struct event_base *base, evutil_socket_t sig, int ncalls)
+//中断信号产生时，从中断信号事件 处理器数组中取得对应的事件处理器，然后同样的插入到请求队列中
+void evmap_signal_active(struct event_base *base, evutil_socket_t sig, int ncalls)
 {
 	struct event_signal_map *map = &base->sigmap;
 	struct evmap_signal *ctx;
