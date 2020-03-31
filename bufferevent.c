@@ -289,6 +289,7 @@ bufferevent_init_common(struct bufferevent_private *bufev_private,struct event_b
 		}
 	}
 
+	//
 	bufev_private->refcnt = 1;
 	bufev->ev_base = base;
 

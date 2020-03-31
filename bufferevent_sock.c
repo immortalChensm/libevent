@@ -318,7 +318,9 @@ bufferevent_writecb(evutil_socket_t fd, short event, void *arg)
 }
 
 /**
- * 给fd 创建好读写事件处理器同时设置其be_ops相关处理函数bufferevent_ops_socket
+ * 1、创建bufferevent_private对象
+ * 2、给其成员bev[bufferevent对象]的input,ouput成员初始化等操作
+ * 3、给其成员bev设置读写bufferevent_readcb/bufferevent_writecb事件处理器
  * @param base
  * @param fd 文件描述符
  * @param options

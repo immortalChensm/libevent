@@ -105,6 +105,7 @@ listener_cb(struct evconnlistener *listener, evutil_socket_t fd,
 	//给bev设置用户的写和异常回调函数
 	bufferevent_setcb(bev, NULL, conn_writecb, conn_eventcb, NULL);
 	//添加一个事件处理器【将写IO事件处理器的写事件添加到内核中】
+	//根据EV_WRITE将写事件处理器添加到I/O事件处理器池中
 	bufferevent_enable(bev, EV_WRITE);
 	//删除一个事件处理器
 	bufferevent_disable(bev, EV_READ);

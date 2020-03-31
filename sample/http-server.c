@@ -354,6 +354,7 @@ main(int argc, char **argv)
 	evhttp_set_gencb(http, send_document_cb, argv[1]);
 
 	/* Now we tell the evhttp what port to listen on */
+	//监听fd并添加监听事件处理器|并添加accept_socket_cb 接收事件处理器
 	handle = evhttp_bind_socket_with_handle(http, "0.0.0.0", port);
 	if (!handle) {
 		fprintf(stderr, "couldn't bind to port %d. Exiting.\n",

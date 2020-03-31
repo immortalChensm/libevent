@@ -151,7 +151,7 @@ static const struct evconnlistener_ops evconnlistener_event_ops = {
 static void listener_read_cb(evutil_socket_t, short, void *);
 
 /**
- *
+ * 根据fd 监听【一般是socket】然后创建listener_read_cb事件处理器 同时向epoll内核注册读就绪事件
  * @param base  event_base 对象
  * @param cb 回调函数
  * @param ptr 回调函数的参数
@@ -207,7 +207,7 @@ struct evconnlistener *evconnlistener_new(struct event_base *base,evconnlistener
 }
 
 /**
- *
+ * 创建socketfd并绑定监听【同时添加了listener_read_cb事件处理器】并向内核注册读就绪事件
  * @param base  event_base 对象
  * @param cb  回调函数
  * @param ptr  回调函数的参数
@@ -268,7 +268,7 @@ struct evconnlistener *evconnlistener_new_bind(struct event_base *base, evconnli
 		}
 	}
 
-	//监听socket
+	//监听socket 同时添加监听
 	listener = evconnlistener_new(base, cb, ptr, flags, backlog, fd);
 	if (!listener) {
 		//创建失败直接close关掉

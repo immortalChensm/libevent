@@ -3099,9 +3099,11 @@ evhttp_bind_socket_with_handle(struct evhttp *http, const char *address, ev_uint
 	evutil_socket_t fd;
 	struct evhttp_bound_socket *bound;
 
+	//封装socket协议，端口，地址，等参数然后创建socketfd绑定
 	if ((fd = bind_socket(address, port, 1 /*reuse*/)) == -1)
 		return (NULL);
 
+	//监听socket
 	if (listen(fd, 128) == -1) {
 		event_sock_warn(fd, "%s: listen", __func__);
 		evutil_closesocket(fd);
@@ -3129,7 +3131,12 @@ evhttp_accept_socket(struct evhttp *http, evutil_socket_t fd)
 	return (0);
 }
 
-
+/**
+ * 监听fd并添加监听事件处理器|并添加accept_socket_cb 接收事件处理器
+ * @param http
+ * @param fd
+ * @return
+ */
 struct evhttp_bound_socket *
 evhttp_accept_socket_with_handle(struct evhttp *http, evutil_socket_t fd)
 {
@@ -3138,13 +3145,12 @@ evhttp_accept_socket_with_handle(struct evhttp *http, evutil_socket_t fd)
 	const int flags =
 	    LEV_OPT_REUSEABLE|LEV_OPT_CLOSE_ON_EXEC|LEV_OPT_CLOSE_ON_FREE;
 
-	listener = evconnlistener_new(http->base, NULL, NULL,
-	    flags,
-	    0, /* Backlog is '0' because we already said 'listen' */
-	    fd);
+	//监听fd同时创建对应的监听事件处理器并添加到I/O事件处理器池中
+	listener = evconnlistener_new(http->base, NULL, NULL,flags,0,fd);
 	if (!listener)
 		return (NULL);
 
+	//给listener设置接收事件回调处理器
 	bound = evhttp_bind_listener(http, listener);
 	if (!bound) {
 		evconnlistener_free(listener);
@@ -3397,9 +3403,7 @@ evhttp_set_allowed_methods(struct evhttp* http, ev_uint16_t methods)
 	http->allowed_methods = methods;
 }
 
-int
-evhttp_set_cb(struct evhttp *http, const char *uri,
-    void (*cb)(struct evhttp_request *, void *), void *cbarg)
+int evhttp_set_cb(struct evhttp *http, const char *uri,void (*cb)(struct evhttp_request *, void *), void *cbarg)
 {
 	struct evhttp_cb *http_cb;
 
@@ -3412,6 +3416,7 @@ evhttp_set_cb(struct evhttp *http, const char *uri,
 		event_warn("%s: calloc", __func__);
 		return (-2);
 	}
+
 
 	http_cb->what = mm_strdup(uri);
 	if (http_cb->what == NULL) {
@@ -3898,11 +3903,13 @@ bind_socket(const char *address, ev_uint16_t port, int reuse)
 	if (address == NULL && port == 0)
 		return bind_socket_ai(NULL, 0);
 
+	//生成地址，协议，套接字等参数对象
 	aitop = make_addrinfo(address, port);
 
 	if (aitop == NULL)
 		return (-1);
 
+	//创建socket并绑定
 	fd = bind_socket_ai(aitop, reuse);
 
 	evutil_freeaddrinfo(aitop);
