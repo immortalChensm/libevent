@@ -1675,6 +1675,7 @@ event_base_loop(struct event_base *base, int flags)
 		timeout_process(base);
 
 		if (N_ACTIVE_CALLBACKS(base)) {
+			//处理就绪的事件队列
 			int n = event_process_active(base);
 			if ((flags & EVLOOP_ONCE)
 			    && N_ACTIVE_CALLBACKS(base) == 0

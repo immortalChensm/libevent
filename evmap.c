@@ -280,8 +280,38 @@ evmap_io_add(struct event_base *base, evutil_socket_t fd, struct event *ev)
 			return (-1);
 	}
 #endif
+//给ctx 申请内容
 	GET_IO_SLOT_AND_CTOR(ctx, io, fd, evmap_io, evmap_io_init,
 						 evsel->fdinfo_len);
+
+	/**
+#define GET_IO_SLOT_AND_CTOR(x,map,slot,type,ctor,fdinfo_len)	\
+	GET_SIGNAL_SLOT_AND_CTOR(x,map,slot,type,ctor,fdinfo_len)
+
+	do {								\
+		if ((io)->entries[fd] == NULL) {			\
+			(io)->entries[fd] =				\
+			    mm_calloc(1,sizeof(struct evmap_io)+fdinfo_len); \
+			if (EVUTIL_UNLIKELY((io)->entries[fd] == NULL)) \
+				return (-1);				\
+			(ctor)((struct evmap_io *)(io)->entries[fd]);	\
+		}
+	 io 是base->io成员
+	 ctx 指向base->io->entries[文件描述符值]
+		(ctx) = (struct evmap_io *)((io)->entries[fd]);		\
+	} while (0)
+
+	 struct evmap_io {
+			struct event_list events;事件处理器列表
+			ev_uint16_t nread;
+			ev_uint16_t nwrite;
+	};
+
+	 base->io->entries[文件描述符1]= [evmap_io对象{event事件处理器对象}]
+	 base->io->entries[文件描述符2]= [evmap_io对象{event事件处理器对象}]
+
+		**/
+
 
 	nread = ctx->nread;
 	nwrite = ctx->nwrite;
@@ -325,8 +355,17 @@ evmap_io_add(struct event_base *base, evutil_socket_t fd, struct event *ev)
 
 	ctx->nread = (ev_uint16_t) nread;
 	ctx->nwrite = (ev_uint16_t) nwrite;
+
+
 	TAILQ_INSERT_TAIL(&ctx->events, ev, ev_io_next);
 
+/**
+	(ev)->ev_io_next.tqe_next = NULL;					\
+	(ev)->ev_io_next.tqe_prev = (ctx->events)->tqh_last;			\
+	*(ctx->events)->tqh_last = (ev);					\
+	(ctx->events)->tqh_last = &(ev)->ev_io_next.tqe_next;			\
+
+**/
 	return (retval);
 }
 
